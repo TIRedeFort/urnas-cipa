@@ -1634,3 +1634,340 @@ body {
     display: flex;
     gap: 10px;
 }
+
+/* ==========================================================================
+   8. RESPONSIVIDADE PARA TABLETS & DISPOSITIVOS MÓVEIS
+   ========================================================================== */
+@media (max-width: 1024px) {
+    .urna-stage {
+        padding: 0.75rem;
+    }
+
+    .urna-physical-cabinet {
+        padding: 16px;
+        border-radius: 18px;
+        border-width: 3px;
+        gap: 10px;
+    }
+
+    .cabinet-brand-bar {
+        padding: 8px 14px;
+    }
+
+    .fort-logo-img {
+        height: 36px;
+    }
+
+    .cabinet-title-wrap h2 {
+        font-size: 1.15rem;
+    }
+
+    .cabinet-title-wrap p {
+        font-size: 0.75rem;
+    }
+
+    .screen-chassis-bezel {
+        padding: 12px;
+        border-radius: 12px;
+        border-width: 2px;
+    }
+
+    .urna-lcd-display {
+        min-height: 520px;
+    }
+
+    .lcd-view {
+        padding: 16px 20px;
+    }
+
+    .lcd-cargo-title {
+        font-size: 1.6rem;
+    }
+
+    .candidates-visual-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 14px;
+    }
+
+    .card-photo-wrapper {
+        height: 155px;
+    }
+
+    .candidate-card-name {
+        font-size: 1.05rem;
+    }
+
+    .candidate-card-party {
+        font-size: 0.78rem;
+    }
+
+    .btn-card-select {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .confirm-content-grid {
+        gap: 20px;
+    }
+
+    .tse-official-photo-frame {
+        width: 160px;
+        height: 215px;
+    }
+
+    .field-data-large {
+        font-size: 2.2rem;
+    }
+
+    .field-data-medium {
+        font-size: 1.3rem;
+    }
+
+    .key-lcd-corrige {
+        padding: 0.75rem 1.4rem;
+    }
+
+    .key-lcd-confirma {
+        padding: 0.85rem 2rem;
+    }
+
+    .key-main {
+        font-size: 1.15rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .urna-stage {
+        padding: 0.4rem;
+    }
+
+    .urna-physical-cabinet {
+        padding: 10px 8px;
+        border-radius: 12px;
+        border-width: 2px;
+        gap: 8px;
+    }
+
+    .cabinet-brand-bar {
+        flex-direction: column;
+        text-align: center;
+        gap: 6px;
+        padding: 8px 10px;
+    }
+
+    .cabinet-title-wrap {
+        margin-left: 0;
+    }
+
+    .cabinet-title-wrap h2 {
+        font-size: 1rem;
+    }
+
+    .cabinet-title-wrap p {
+        font-size: 0.68rem;
+    }
+
+    .cabinet-model-tag {
+        display: none;
+    }
+
+    .screen-chassis-bezel {
+        padding: 6px;
+        border-radius: 8px;
+        border-width: 1.5px;
+    }
+
+    .urna-lcd-display {
+        min-height: 420px;
+    }
+
+    .lcd-view {
+        padding: 10px 8px;
+    }
+
+    .lcd-header-bar {
+        padding-bottom: 8px;
+        margin-bottom: 12px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .lcd-small-label {
+        font-size: 0.75rem;
+    }
+
+    .lcd-cargo-title {
+        font-size: 1.15rem;
+    }
+
+    .lcd-instruction-badge {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.6rem;
+    }
+
+    .candidates-visual-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .card-photo-wrapper {
+        height: 120px;
+    }
+
+    .candidate-card-name {
+        font-size: 0.9rem;
+    }
+
+    .candidate-card-party {
+        font-size: 0.7rem;
+        margin-bottom: 6px;
+    }
+
+    .btn-card-select {
+        padding: 0.4rem;
+        font-size: 0.72rem;
+    }
+
+    .lcd-bottom-actions {
+        padding-top: 10px;
+    }
+
+    .btn-lcd-branco {
+        width: 100%;
+        justify-content: center;
+        padding: 0.65rem 1rem;
+        font-size: 0.95rem;
+    }
+
+    .confirm-content-grid {
+        flex-direction: column-reverse;
+        text-align: center;
+        gap: 12px;
+        padding: 6px 0;
+    }
+
+    .confirm-info-col {
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .tse-official-photo-frame {
+        width: 130px;
+        height: 170px;
+    }
+
+    .field-data-large {
+        font-size: 1.6rem;
+    }
+
+    .field-data-medium {
+        font-size: 1.1rem;
+    }
+
+    .blank-huge-text {
+        font-size: 2.5rem;
+    }
+
+    .confirm-footer-bar {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+        text-align: center;
+    }
+
+    .footer-buttons-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .key-lcd-corrige {
+        padding: 0.7rem 0.4rem;
+        width: 100%;
+    }
+
+    .key-lcd-confirma {
+        padding: 0.8rem 0.4rem;
+        width: 100%;
+    }
+
+    .key-main {
+        font-size: 1.05rem;
+    }
+
+    .key-sub {
+        font-size: 0.58rem;
+    }
+
+    .lock-shield-icon {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 0.8rem;
+    }
+
+    .lock-emoji {
+        font-size: 2rem;
+    }
+
+    .lock-title {
+        font-size: 1.7rem;
+    }
+
+    .lock-desc {
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .lock-system-strip {
+        font-size: 0.7rem;
+        flex-direction: column;
+        gap: 4px;
+        text-align: center;
+    }
+
+    .gravando-box h2 {
+        font-size: 2.2rem;
+    }
+
+    .progress-bar-tse {
+        width: 90%;
+        max-width: 260px;
+    }
+
+    .fim-box .fim-title {
+        font-size: 4rem;
+    }
+
+    .cabinet-bottom-bar {
+        flex-direction: column;
+        gap: 4px;
+        text-align: center;
+        font-size: 0.65rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .candidates-visual-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .card-photo-wrapper {
+        height: 100px;
+    }
+
+    .candidate-card-name {
+        font-size: 0.8rem;
+    }
+
+    .candidate-card-party {
+        font-size: 0.65rem;
+    }
+
+    .btn-card-select {
+        font-size: 0.68rem;
+        padding: 0.35rem;
+    }
+}
