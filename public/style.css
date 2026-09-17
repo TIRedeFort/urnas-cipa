@@ -1971,3 +1971,363 @@ body {
         padding: 0.35rem;
     }
 }
+
+/* ==========================================================================
+   9. MODO HORIZONTAL (LANDSCAPE) PARA TABLETS & SMARTPHONES (SEM SCROLL)
+   ========================================================================== */
+@media (orientation: landscape) and (max-height: 850px), (max-height: 650px) {
+    html, body.urna-body {
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden !important;
+        margin: 0;
+        padding: 0;
+    }
+
+    .urna-stage {
+        height: 100vh;
+        height: 100dvh;
+        padding: 4px 10px;
+        display: flex;
+        align-items: stretch;
+        justify-content: center;
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+
+    .urna-physical-cabinet {
+        height: 100%;
+        max-height: 100%;
+        padding: 6px 12px 6px;
+        border-radius: 12px;
+        border-width: 2px;
+        gap: 4px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-sizing: border-box;
+    }
+
+    /* Cabeçalho compacto */
+    .cabinet-brand-bar {
+        padding: 4px 10px;
+        border-radius: 6px;
+        flex-shrink: 0;
+        min-height: 34px;
+    }
+
+    .fort-logo-img {
+        height: 24px;
+    }
+
+    .cabinet-logo-wrapper {
+        padding: 3px 8px;
+    }
+
+    .cabinet-title-wrap {
+        margin-left: 12px;
+    }
+
+    .cabinet-title-wrap h2 {
+        font-size: 0.85rem;
+        letter-spacing: 0.03em;
+        line-height: 1.1;
+    }
+
+    .cabinet-title-wrap p {
+        font-size: 0.62rem;
+        line-height: 1.1;
+    }
+
+    .cabinet-model-tag {
+        display: inline-block;
+        padding: 2px 8px;
+        font-size: 0.65rem;
+    }
+
+    /* Moldura Bezel e Visor */
+    .screen-chassis-bezel {
+        flex: 1;
+        min-height: 0;
+        padding: 4px;
+        border-radius: 8px;
+        border-width: 1.5px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .urna-lcd-display {
+        flex: 1;
+        min-height: 0;
+        height: 100%;
+        border-radius: 6px;
+        border-width: 2.5px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .lcd-view {
+        height: 100%;
+        padding: 6px 12px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+
+    /* 1. Escolha de Candidatos */
+    .lcd-header-bar {
+        padding-bottom: 3px;
+        margin-bottom: 4px;
+        border-bottom-width: 2px;
+        flex-shrink: 0;
+        flex-direction: row;
+        align-items: flex-end;
+    }
+
+    .lcd-small-label {
+        font-size: 0.65rem;
+    }
+
+    .lcd-cargo-title {
+        font-size: 0.95rem;
+        margin-top: 0;
+    }
+
+    .lcd-instruction-badge {
+        font-size: 0.65rem;
+        padding: 2px 6px;
+    }
+
+    .lcd-candidates-scroll-area {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        margin-bottom: 4px;
+        padding-right: 4px;
+    }
+
+    .candidates-visual-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+        gap: 8px;
+        height: 100%;
+    }
+
+    .candidate-select-card {
+        border-width: 2px;
+        box-shadow: 0 3px 0 rgba(0,0,0,0.15);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .card-photo-wrapper {
+        flex: 1;
+        min-height: 65px;
+        max-height: 115px;
+        height: auto;
+        border-bottom-width: 2px;
+    }
+
+    .card-info-content {
+        padding: 4px 6px;
+    }
+
+    .candidate-card-name {
+        font-size: 0.78rem;
+        margin-bottom: 1px;
+    }
+
+    .candidate-card-party {
+        font-size: 0.62rem;
+        margin-bottom: 3px;
+    }
+
+    .btn-card-select {
+        padding: 3px 6px;
+        font-size: 0.65rem;
+    }
+
+    .lcd-bottom-actions {
+        padding-top: 3px;
+        border-top-width: 2px;
+        flex-shrink: 0;
+    }
+
+    .btn-lcd-branco {
+        padding: 4px 14px;
+        font-size: 0.8rem;
+        border-width: 2px;
+        box-shadow: 0 2px 0 #555;
+    }
+
+    .btn-branco-box {
+        width: 12px;
+        height: 12px;
+    }
+
+    /* 2. Confirmação de Voto */
+    .confirm-content-grid {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 4px 10px;
+    }
+
+    .confirm-info-col {
+        flex: 1;
+        gap: 6px;
+        justify-content: center;
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .field-title {
+        font-size: 0.68rem;
+    }
+
+    .field-data-large {
+        font-size: 1.35rem;
+        line-height: 1.1;
+    }
+
+    .field-data-medium {
+        font-size: 0.95rem;
+    }
+
+    .confirm-photo-col {
+        flex-shrink: 0;
+    }
+
+    .tse-official-photo-frame {
+        width: 95px;
+        height: 125px;
+        border-width: 2px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .photo-caption {
+        font-size: 0.68rem;
+    }
+
+    .confirm-blank-col .blank-huge-text {
+        font-size: 2.2rem;
+    }
+
+    .confirm-blank-col .blank-sub-info {
+        font-size: 0.95rem;
+    }
+
+    .confirm-footer-bar {
+        border-top-width: 2px;
+        padding-top: 4px;
+        flex-shrink: 0;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .footer-help-text p {
+        font-size: 0.72rem;
+    }
+
+    .footer-help-text small {
+        font-size: 0.62rem;
+    }
+
+    .footer-buttons-group {
+        display: flex;
+        gap: 8px;
+        width: auto;
+    }
+
+    .key-lcd-corrige {
+        padding: 5px 14px;
+        border-radius: 6px;
+        box-shadow: 0 3px 0 #7a2a00;
+    }
+
+    .key-lcd-confirma {
+        padding: 6px 20px;
+        border-radius: 6px;
+        box-shadow: 0 3px 0 #003a1b;
+    }
+
+    .key-main {
+        font-size: 0.88rem;
+    }
+
+    .key-sub {
+        font-size: 0.5rem;
+    }
+
+    /* 3. Tela Bloqueada */
+    .lock-shield-icon {
+        width: 46px;
+        height: 46px;
+        margin-bottom: 0.3rem;
+        border-width: 2.5px;
+    }
+
+    .lock-emoji {
+        font-size: 1.4rem;
+    }
+
+    .lock-title {
+        font-size: 1.25rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .lock-desc {
+        font-size: 0.82rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .lock-system-strip {
+        padding-top: 0.4rem;
+        font-size: 0.62rem;
+        flex-direction: row;
+        justify-content: space-around;
+    }
+
+    /* 4. Gravando e FIM */
+    .gravando-box h2 {
+        font-size: 1.6rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .progress-bar-tse {
+        width: 200px;
+        height: 12px;
+    }
+
+    .fim-box .fim-title {
+        font-size: 3.2rem;
+        margin-bottom: 0.1rem;
+    }
+
+    .fim-box .votou-label {
+        font-size: 1.1rem;
+    }
+
+    .tse-seal-bottom {
+        font-size: 0.62rem;
+        margin-top: 0.3rem;
+    }
+
+    /* Barra inferior */
+    .cabinet-bottom-bar {
+        padding: 2px 4px;
+        flex-shrink: 0;
+        font-size: 0.58rem;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}
