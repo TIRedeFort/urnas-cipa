@@ -245,6 +245,31 @@ if (btnSelectBlank) {
     });
 }
 
+const btnFullscreenToggle = document.getElementById('btn-fullscreen-toggle');
+if (btnFullscreenToggle) {
+    btnFullscreenToggle.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.warn("Fullscreen request error:", err);
+            });
+            btnFullscreenToggle.innerHTML = '<span>✕ SAIR TELA CHEIA</span>';
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+            btnFullscreenToggle.innerHTML = '<span>⛶ TELA CHEIA</span>';
+        }
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement) {
+            btnFullscreenToggle.innerHTML = '<span>⛶ TELA CHEIA</span>';
+        } else {
+            btnFullscreenToggle.innerHTML = '<span>✕ SAIR TELA CHEIA</span>';
+        }
+    });
+}
+
 if (btnLcdCorrige) {
     btnLcdCorrige.addEventListener('click', () => {
         urnaAudio.playKeyBeep();

@@ -1,0 +1,18 @@
+{
+  "name": "Urna Eletrônica CIPA - Rede Fort",
+  "short_name": "Urna CIPA",
+  "start_url": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#151821",
+  "theme_color": "#151821",
+  "description": "Urna Eletrônica Oficial da Eleição CIPA Rede Fort",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

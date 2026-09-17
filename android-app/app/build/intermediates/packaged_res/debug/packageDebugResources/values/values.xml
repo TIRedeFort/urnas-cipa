@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Urna CIPA</string>
+    <style name="Theme.UrnaCIPA" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#FBB03B</item>
+        <item name="colorPrimaryVariant">#E8412F</item>
+        <item name="colorOnPrimary">#000000</item>
+        <item name="android:statusBarColor">#151821</item>
+        <item name="android:navigationBarColor">#151821</item>
+    </style>
+    <style name="Theme.UrnaCIPA.Fullscreen" parent="Theme.UrnaCIPA">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+</resources>

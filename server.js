@@ -44,6 +44,16 @@ router.get(['/apuracao', '/urna-apuracao', '/apuracao.html'], (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'apuracao.html'));
 });
 
+// 1.4 Download direto do APK para Tablet
+router.get(['/download-apk', '/urna-apk', '/urna/download-apk'], (req, res) => {
+    const apkPath = path.join(__dirname, 'public', 'urna-cipa.apk');
+    if (fs.existsSync(apkPath)) {
+        res.download(apkPath, 'urna-cipa.apk');
+    } else {
+        res.status(404).send('APK ainda não gerado.');
+    }
+});
+
 
 // ==========================================================================
 // 2. ROTAS DA API - URNA & VOTAÇÃO

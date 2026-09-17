@@ -128,6 +128,11 @@ body {
 }
 
 .cabinet-model-tag {
+    display: flex;
+    align-items: center;
+}
+
+.btn-fullscreen-toggle {
     background: #0a0b0d;
     border: 1px solid var(--fort-yellow);
     padding: 0.45rem 1rem;
@@ -138,6 +143,21 @@ body {
     color: var(--fort-yellow);
     letter-spacing: 0.08em;
     box-shadow: 0 0 10px rgba(251, 176, 59, 0.2);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-fullscreen-toggle:hover {
+    background: var(--fort-yellow);
+    color: #000;
+    box-shadow: 0 0 14px rgba(251, 176, 59, 0.5);
+}
+
+.btn-fullscreen-toggle:active {
+    transform: scale(0.96);
 }
 
 /* MOLDURA E BEZEL DA TELA TOUCH */
@@ -244,28 +264,26 @@ body {
 }
 
 /* 2. TELA DE ESCOLHA DE CANDIDATOS (TOUCH COM FOTOS GRANDES) */
-/* 2. TELA DE ESCOLHA DE CANDIDATOS (TOUCH COM FOTOS GRANDES E NÍTIDAS) */
 .lcd-header-bar {
     border-bottom: 3px solid #000;
-    padding-bottom: 10px;
-    margin-bottom: 12px;
+    padding-bottom: 12px;
+    margin-bottom: 20px;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    flex-shrink: 0;
 }
 
 .lcd-small-label {
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     font-weight: 800;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #333;
+    color: #222;
     display: block;
 }
 
 .lcd-cargo-title {
-    font-size: 1.6rem;
+    font-size: 2rem;
     font-weight: 900;
     letter-spacing: 0.02em;
     color: #000;
@@ -275,65 +293,55 @@ body {
 .lcd-instruction-badge {
     background: #000;
     color: var(--fort-yellow);
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 800;
-    padding: 0.4rem 0.9rem;
+    padding: 0.45rem 1rem;
     border-radius: 6px;
     letter-spacing: 0.04em;
 }
 
 .lcd-candidates-scroll-area {
     flex: 1;
-    min-height: 0;
     overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 6px 4px;
-    margin-bottom: 8px;
+    padding-right: 6px;
+    margin-bottom: 16px;
 }
 
 .candidates-visual-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: stretch;
-    gap: clamp(14px, 2vw, 26px);
-    width: 100%;
-    margin: 0 auto;
-    padding: 4px 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    align-content: start;
 }
 
 .candidate-select-card {
     background: #ffffff;
     border: 3px solid #000;
-    border-radius: 12px;
+    border-radius: 10px;
     overflow: hidden;
     cursor: pointer;
     display: flex;
     flex-direction: column;
-    width: clamp(190px, 22vw, 250px);
-    flex-shrink: 0;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-    box-shadow: 0 6px 0 rgba(0, 0, 0, 0.25);
+    transition: all 0.15s ease-in-out;
+    box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2);
 }
 
 .candidate-select-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-5px);
     border-color: var(--fort-red);
-    box-shadow: 0 10px 20px rgba(232, 65, 47, 0.25), 0 6px 0 #000;
+    box-shadow: 0 12px 20px rgba(232, 65, 47, 0.25), 0 6px 0 #000;
     background: #fffafa;
 }
 
 .candidate-select-card:active {
     transform: translateY(2px);
-    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 0 rgba(0,0,0,0.3);
 }
 
-/* Foto proporcional (1:1 / quadrada / levemente retrato) — rosto 100% visível */
+/* Foto com proporção 3:4 — identificável em qualquer tamanho de tela */
 .card-photo-wrapper {
     width: 100%;
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 3 / 4;
     background-color: #d1d5db;
     overflow: hidden;
     border-bottom: 3px solid #000;
@@ -345,23 +353,22 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center 20%;
+    object-position: top center;
     display: block;
 }
 
 /* Rodapé compacto: nome + departamento + botão */
 .card-info-content {
-    padding: 8px 10px;
+    padding: 10px 12px;
     text-align: center;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 4px;
-    flex: 1;
+    gap: 6px;
+    flex-shrink: 0;
 }
 
 .candidate-card-name {
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     font-weight: 900;
     color: #000;
     text-transform: uppercase;
@@ -370,7 +377,7 @@ body {
 }
 
 .candidate-card-party {
-    font-size: 0.75rem;
+    font-size: 0.78rem;
     font-weight: 700;
     color: #475569;
     text-transform: uppercase;
@@ -381,8 +388,8 @@ body {
     background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
     color: #ffffff;
     border: 1px solid var(--fort-yellow);
-    padding: 0.5rem;
-    font-size: 0.82rem;
+    padding: 0.55rem;
+    font-size: 0.85rem;
     font-weight: 900;
     border-radius: 4px;
     cursor: pointer;
@@ -397,20 +404,20 @@ body {
     color: #ffffff;
 }
 
+
 .lcd-bottom-actions {
     border-top: 3px solid #000;
-    padding-top: 10px;
+    padding-top: 14px;
     display: flex;
     justify-content: flex-end;
-    flex-shrink: 0;
 }
 
 .btn-lcd-branco {
     background: #ffffff;
     color: #000000;
     border: 3px solid #000000;
-    padding: 0.75rem 1.8rem;
-    font-size: 1rem;
+    padding: 0.85rem 2rem;
+    font-size: 1.1rem;
     font-weight: 900;
     cursor: pointer;
     display: flex;
@@ -433,32 +440,25 @@ body {
     background: #fff;
 }
 
-/* 3. TELA DE CONFIRMAÇÃO OFICIAL (HARMONIOSA E CENTRALIZADA) */
+/* 3. TELA DE CONFIRMAÇÃO OFICIAL */
 .view-confirmacao {
     justify-content: space-between;
 }
 
 .confirm-content-grid {
     flex: 1;
-    min-height: 0;
     display: flex;
-    flex-direction: row;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    gap: clamp(24px, 5vw, 60px);
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: clamp(8px, 2vh, 20px) 16px;
+    padding: 12px 0;
+    gap: 32px;
 }
 
 .confirm-info-col {
     flex: 1;
-    max-width: 480px;
     display: flex;
     flex-direction: column;
-    gap: clamp(12px, 2vh, 22px);
-    justify-content: center;
+    gap: 1.6rem;
 }
 
 .confirm-field-group {
@@ -467,16 +467,15 @@ body {
 }
 
 .field-title {
-    font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+    font-size: 0.95rem;
     font-weight: 800;
-    color: #475569;
+    color: #333;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 2px;
+    letter-spacing: 0.05em;
 }
 
 .field-data-large {
-    font-size: clamp(1.8rem, 3.8vw, 2.8rem);
+    font-size: 2.8rem;
     font-weight: 900;
     color: #000;
     text-transform: uppercase;
@@ -484,9 +483,9 @@ body {
 }
 
 .field-data-medium {
-    font-size: clamp(1.1rem, 2.2vw, 1.6rem);
+    font-size: 1.6rem;
     font-weight: 800;
-    color: #1e293b;
+    color: #111;
     text-transform: uppercase;
 }
 
@@ -513,33 +512,30 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     flex-shrink: 0;
 }
 
 .tse-official-photo-frame {
-    width: clamp(150px, 18vw, 220px);
-    aspect-ratio: 3 / 4;
+    width: 210px;
+    height: 270px;
     border: 4px solid #000;
     background: #ffffff;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
     overflow: hidden;
-    border-radius: 6px;
 }
 
 .tse-official-photo-frame img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center 20%;
-    display: block;
 }
 
 .photo-caption {
     font-size: 0.85rem;
     font-weight: 900;
     color: #000;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.05em;
 }
 
 .confirm-footer-bar {
@@ -1739,6 +1735,7 @@ body {
 
 /* ======================================================
    PORTRAIT — Tablet (max-width: 1024px)
+   Grid 3 colunas, fotos com aspect-ratio 3/4
    ====================================================== */
 @media (max-width: 1024px) and (orientation: portrait) {
     .urna-stage {
@@ -1798,29 +1795,25 @@ body {
         padding: 0.25rem 0.6rem;
     }
 
+    /* 3 colunas em tablet — fotos identificáveis com aspect-ratio */
     .candidates-visual-grid {
-        gap: clamp(10px, 1.8vw, 20px);
+        grid-template-columns: repeat(3, 1fr);
+        gap: clamp(8px, 1.5vw, 18px);
     }
 
-    .candidate-select-card {
-        width: clamp(170px, 28vw, 230px);
-    }
-
-    .card-photo-wrapper {
-        border-bottom-width: 2px;
-    }
+    .card-photo-wrapper { border-bottom-width: 2px; }
 
     .card-info-content {
         padding: clamp(5px, 0.8vh, 10px) clamp(6px, 1vw, 12px);
         gap: 4px;
     }
 
-    .candidate-card-name { font-size: clamp(0.75rem, 1.5vw, 1.05rem); }
-    .candidate-card-party { font-size: clamp(0.6rem, 1.1vw, 0.8rem); }
+    .candidate-card-name { font-size: clamp(0.7rem, 1.4vw, 1rem); }
+    .candidate-card-party { font-size: clamp(0.55rem, 1vw, 0.78rem); }
 
     .btn-card-select {
-        padding: clamp(0.3rem, 0.6vh, 0.55rem);
-        font-size: clamp(0.65rem, 1.1vw, 0.85rem);
+        padding: clamp(0.28rem, 0.6vh, 0.55rem);
+        font-size: clamp(0.58rem, 1vw, 0.82rem);
     }
 
     .lcd-bottom-actions {
@@ -1833,17 +1826,14 @@ body {
         font-size: clamp(0.75rem, 1.5vw, 1.1rem);
     }
 
-    .confirm-content-grid {
-        gap: clamp(20px, 4vw, 40px);
-    }
-
     .tse-official-photo-frame {
-        width: clamp(130px, 18vw, 200px);
+        width: clamp(100px, 16vw, 180px);
+        height: clamp(135px, 22vw, 240px);
     }
 
-    .field-data-large { font-size: clamp(1.4rem, 3.5vw, 2.6rem); }
-    .field-data-medium { font-size: clamp(0.95rem, 2.2vw, 1.5rem); }
-    .field-title { font-size: clamp(0.65rem, 1.2vw, 0.95rem); }
+    .field-data-large { font-size: clamp(1.3rem, 3.5vw, 2.6rem); }
+    .field-data-medium { font-size: clamp(0.9rem, 2.2vw, 1.5rem); }
+    .field-title { font-size: clamp(0.62rem, 1.2vw, 0.95rem); }
     .blank-huge-text { font-size: clamp(2rem, 5vw, 3.8rem); }
     .blank-sub-info { font-size: clamp(0.8rem, 1.8vw, 1.3rem); }
 
@@ -1882,6 +1872,7 @@ body {
 
 /* ======================================================
    PORTRAIT — Celular (max-width: 600px)
+   Grid 2 colunas, aspect-ratio 3/4 nas fotos
    ====================================================== */
 @media (max-width: 600px) and (orientation: portrait) {
     .urna-stage { padding: 0.25rem 0.3rem; }
@@ -1926,21 +1917,18 @@ body {
         align-self: flex-start;
     }
 
+    /* 2 colunas + aspect-ratio nas fotos = identificáveis no celular */
     .candidates-visual-grid {
-        gap: 8px;
-    }
-
-    .candidate-select-card {
-        width: calc(50% - 6px);
-        max-width: 180px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: clamp(5px, 1.5vw, 9px);
     }
 
     .card-photo-wrapper { border-bottom-width: 2px; }
 
-    .card-info-content { padding: 4px 6px; gap: 2px; }
-    .candidate-card-name { font-size: clamp(0.65rem, 2.8vw, 0.85rem); }
+    .card-info-content { padding: 5px 6px; gap: 3px; }
+    .candidate-card-name { font-size: clamp(0.62rem, 2.5vw, 0.82rem); }
     .candidate-card-party { font-size: 0.55rem; }
-    .btn-card-select { padding: 0.28rem; font-size: 0.6rem; }
+    .btn-card-select { padding: 0.28rem; font-size: 0.58rem; }
 
     .lcd-bottom-actions { padding-top: 5px; flex-shrink: 0; }
 
@@ -1954,14 +1942,15 @@ body {
         padding: 4px 0;
     }
 
-    .confirm-info-col { align-items: center; text-align: center; gap: 0.4rem; }
+    .confirm-info-col { align-items: center; text-align: center; gap: 0.5rem; }
 
     .tse-official-photo-frame {
-        width: clamp(90px, 26vw, 130px);
+        width: clamp(80px, 22vw, 120px);
+        height: clamp(108px, 30vw, 160px);
     }
 
-    .field-data-large { font-size: clamp(1.2rem, 5vw, 1.6rem); }
-    .field-data-medium { font-size: clamp(0.85rem, 3vw, 1rem); }
+    .field-data-large { font-size: clamp(1.1rem, 5vw, 1.6rem); }
+    .field-data-medium { font-size: clamp(0.8rem, 3vw, 1rem); }
     .field-title { font-size: 0.6rem; }
     .blank-huge-text { font-size: clamp(1.6rem, 7vw, 2.5rem); }
     .blank-sub-info { font-size: clamp(0.7rem, 2.5vw, 0.95rem); }
@@ -2014,7 +2003,7 @@ body {
 
 /* ======================================================
    LANDSCAPE — Tablet deitado (max-width: 1280px, max-height: 960px)
-   Fotos quadradas/retrato com tamanho perfeito e centralizadas
+   Fotos com height fixo compacto para caber sem scroll
    ====================================================== */
 @media (orientation: landscape) and (max-width: 1280px) and (max-height: 960px) {
     .urna-stage {
@@ -2057,7 +2046,7 @@ body {
 
     .lcd-header-bar {
         padding-bottom: clamp(3px, 0.5vh, 8px);
-        margin-bottom: clamp(4px, 0.6vh, 10px);
+        margin-bottom: clamp(4px, 0.6vh, 12px);
         flex-direction: row;
         align-items: flex-end;
         flex-shrink: 0;
@@ -2071,77 +2060,83 @@ body {
         padding: 2px 7px;
     }
 
-    /* Cards em landscape: largura controlada e fotos 1:1, sempre harmoniosos */
+    /* Landscape: colunas automáticas + height fixo proporcional à altura */
+    /* Landscape: menos colunas = fotos maiores e identificáveis */
     .candidates-visual-grid {
-        gap: clamp(12px, 2vw, 24px);
+        grid-template-columns: repeat(auto-fit, minmax(clamp(120px, 18vw, 200px), 1fr));
+        gap: clamp(6px, 1vw, 14px);
+        grid-template-columns: repeat(auto-fit, minmax(clamp(180px, 24vw, 280px), 1fr));
+        gap: clamp(8px, 1.2vw, 16px);
     }
 
-    .candidate-select-card {
-        width: clamp(160px, 20vw, 220px);
-    }
-
+    /* No landscape sobrescreve aspect-ratio com height limitado */
+    /* No landscape sobrescreve aspect-ratio com height mais generoso */
     .card-photo-wrapper {
-        aspect-ratio: 1 / 1;
+        aspect-ratio: unset;
+        height: clamp(80px, 16vh, 150px);
+        height: clamp(110px, 28vh, 220px);
         border-bottom-width: 2px;
     }
 
-    .card-info-content {
-        padding: clamp(4px, 0.6vh, 8px) clamp(6px, 0.8vw, 10px);
-        gap: 3px;
-    }
 
-    .candidate-card-name { font-size: clamp(0.7rem, 1.4vh, 0.95rem); }
-    .candidate-card-party { font-size: clamp(0.55rem, 1.1vh, 0.75rem); }
-    .btn-card-select { padding: clamp(3px, 0.5vh, 6px) clamp(4px, 0.5vw, 8px); font-size: clamp(0.6rem, 1.1vh, 0.78rem); }
+    .card-info-content { padding: clamp(3px, 0.5vh, 8px) clamp(5px, 0.6vw, 10px); gap: 3px; }
+    .candidate-card-name { font-size: clamp(0.62rem, 1.3vh, 0.9rem); }
+    .candidate-card-party { font-size: clamp(0.52rem, 1vh, 0.72rem); }
+    .btn-card-select { padding: clamp(2px, 0.4vh, 5px) clamp(4px, 0.5vw, 8px); font-size: clamp(0.55rem, 1vh, 0.75rem); }
 
     .lcd-bottom-actions { padding-top: clamp(3px, 0.5vh, 8px); border-top-width: 2px; flex-shrink: 0; }
 
     .btn-lcd-branco {
-        padding: clamp(4px, 0.6vh, 8px) clamp(12px, 1.5vw, 20px);
-        font-size: clamp(0.7rem, 1.4vh, 0.95rem);
+        padding: clamp(3px, 0.5vh, 7px) clamp(10px, 1.2vw, 18px);
+        font-size: clamp(0.65rem, 1.3vh, 0.95rem);
         border-width: 2px;
     }
 
-    .btn-branco-box { width: 12px; height: 12px; }
+    .btn-branco-box { width: 11px; height: 11px; }
 
     .confirm-content-grid {
-        gap: clamp(20px, 4vw, 50px);
-        padding: clamp(4px, 1vh, 14px) clamp(8px, 1.5vw, 20px);
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: clamp(10px, 2vw, 24px);
+        padding: clamp(3px, 0.5vh, 8px) clamp(8px, 1vw, 16px);
     }
 
-    .confirm-info-col {
-        gap: clamp(8px, 1.5vh, 18px);
-    }
-
-    .field-title { font-size: clamp(0.6rem, 1.2vh, 0.85rem); }
-    .field-data-large { font-size: clamp(1.2rem, 3vh, 2.2rem); line-height: 1.1; }
-    .field-data-medium { font-size: clamp(0.85rem, 2vh, 1.3rem); }
+    .confirm-info-col { flex: 1; gap: clamp(5px, 0.8vh, 14px); align-items: flex-start; text-align: left; }
+    .field-title { font-size: clamp(0.55rem, 1.1vh, 0.82rem); }
+    .field-data-large { font-size: clamp(1rem, 2.5vh, 1.9rem); line-height: 1.1; }
+    .field-data-medium { font-size: clamp(0.75rem, 1.8vh, 1.2rem); }
+    .confirm-photo-col { flex-shrink: 0; }
 
     .tse-official-photo-frame {
-        width: clamp(120px, 15vw, 190px);
+        width: clamp(70px, 10vw, 140px);
+        height: clamp(95px, 14vw, 190px);
+        width: clamp(110px, 14vw, 180px);
+        height: clamp(148px, 19vw, 242px);
+        border-width: 2px;
     }
 
-    .photo-caption { font-size: clamp(0.6rem, 1.1vh, 0.8rem); }
-    .confirm-blank-col .blank-huge-text { font-size: clamp(1.8rem, 4vh, 3rem); }
-    .confirm-blank-col .blank-sub-info { font-size: clamp(0.75rem, 1.6vh, 1.15rem); }
+    .photo-caption { font-size: clamp(0.55rem, 1vh, 0.78rem); }
+    .confirm-blank-col .blank-huge-text { font-size: clamp(1.6rem, 3.5vh, 2.8rem); }
+    .confirm-blank-col .blank-sub-info { font-size: clamp(0.7rem, 1.5vh, 1.1rem); }
 
     .confirm-footer-bar {
         border-top-width: 2px;
-        padding-top: clamp(4px, 0.6vh, 10px);
+        padding-top: clamp(3px, 0.5vh, 9px);
         flex-shrink: 0;
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
     }
 
-    .footer-help-text p { font-size: clamp(0.6rem, 1.2vh, 0.9rem); }
-    .footer-help-text small { font-size: clamp(0.52rem, 1vh, 0.78rem); }
+    .footer-help-text p { font-size: clamp(0.58rem, 1.2vh, 0.88rem); }
+    .footer-help-text small { font-size: clamp(0.5rem, 1vh, 0.75rem); }
     .footer-buttons-group { display: flex; gap: clamp(6px, 1vw, 14px); width: auto; }
 
     .key-lcd-corrige { padding: clamp(4px, 0.7vh, 9px) clamp(12px, 1.5vw, 22px); border-radius: 6px; box-shadow: 0 3px 0 #7a2a00; }
     .key-lcd-confirma { padding: clamp(5px, 0.8vh, 10px) clamp(18px, 2.2vw, 32px); border-radius: 6px; box-shadow: 0 3px 0 #003a1b; }
-    .key-main { font-size: clamp(0.75rem, 1.6vh, 1.1rem); }
-    .key-sub { font-size: clamp(0.44rem, 0.9vh, 0.65rem); }
+    .key-main { font-size: clamp(0.7rem, 1.5vh, 1.05rem); }
+    .key-sub { font-size: clamp(0.42rem, 0.85vh, 0.62rem); }
 
     .lock-shield-icon {
         width: clamp(36px, 6vh, 64px);
@@ -2205,15 +2200,16 @@ body {
     .lcd-instruction-badge { font-size: 0.55rem; padding: 1px 5px; }
 
     .candidates-visual-grid {
-        gap: 6px;
-    }
-
-    .candidate-select-card {
-        width: clamp(120px, 20vw, 150px);
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 5px;
     }
 
     .card-photo-wrapper {
-        aspect-ratio: 1 / 1;
+        aspect-ratio: unset;
+        height: clamp(50px, 11vh, 85px);
+        min-height: 50px;
+        height: clamp(70px, 16vh, 120px);
+        min-height: 70px;
         border-bottom-width: 2px;
     }
 
@@ -2225,10 +2221,11 @@ body {
     .lcd-bottom-actions { padding-top: 3px; flex-shrink: 0; }
     .btn-lcd-branco { padding: 3px 9px; font-size: 0.65rem; }
 
-    .confirm-content-grid { flex-direction: row; align-items: center; gap: 12px; padding: 2px 6px; }
+    .confirm-content-grid { flex-direction: row; align-items: center; gap: 8px; padding: 2px 6px; }
 
     .tse-official-photo-frame {
-        width: clamp(80px, 14vw, 110px);
+        width: clamp(50px, 9vw, 75px);
+        height: clamp(68px, 12vw, 100px);
     }
 
     .field-data-large { font-size: clamp(0.9rem, 2.5vh, 1.3rem); }
@@ -2264,4 +2261,3 @@ body {
     .tse-seal-bottom { font-size: 0.5rem; margin-top: 0.3rem; }
     .cabinet-bottom-bar { padding: 2px 4px; flex-shrink: 0; font-size: 0.5rem; flex-direction: row; }
 }
-
