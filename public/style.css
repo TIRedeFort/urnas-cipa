@@ -1636,287 +1636,340 @@ body {
 }
 
 /* ==========================================================================
-   8. RESPONSIVIDADE PARA TABLETS (PORTRAIT) — URNA CENTRALIZADA
+   8. RESPONSIVIDADE — URNA OCUPA 100% DA TELA EM QUALQUER DISPOSITIVO
+   Estratégia: html/body/stage com 100dvh, cabinet com flex:1 e height:100%,
+   elementos internos escalam com clamp() e unidades relativas.
    ========================================================================== */
 
-/* --- Tablet grande portrait (ex: iPad Pro 12", 1024px) --- */
-@media (max-width: 1024px) and (orientation: portrait) {
-    .urna-stage {
-        padding: 1rem;
-        align-items: center;
-    }
-
-    .urna-physical-cabinet {
-        max-width: 600px;
-        width: 100%;
-        padding: 18px 16px;
-        border-radius: 20px;
-        border-width: 3px;
-        gap: 12px;
-    }
-
-    .cabinet-brand-bar {
-        padding: 8px 14px;
-    }
-
-    .fort-logo-img {
-        height: 34px;
-    }
-
-    .cabinet-title-wrap h2 {
-        font-size: 1.1rem;
-    }
-
-    .cabinet-title-wrap p {
-        font-size: 0.72rem;
-    }
-
-    .screen-chassis-bezel {
-        padding: 10px;
-        border-radius: 12px;
-        border-width: 2px;
-    }
-
-    .urna-lcd-display {
-        min-height: 480px;
-    }
-
-    .lcd-view {
-        padding: 14px 16px;
-    }
-
-    .lcd-cargo-title {
-        font-size: 1.5rem;
-    }
-
-    .candidates-visual-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-    }
-
-    .card-photo-wrapper {
-        height: 140px;
-    }
-
-    .candidate-card-name {
-        font-size: 1rem;
-    }
-
-    .candidate-card-party {
-        font-size: 0.75rem;
-    }
-
-    .btn-card-select {
-        padding: 0.5rem;
-        font-size: 0.78rem;
-    }
-
-    .confirm-content-grid {
-        gap: 18px;
-    }
-
-    .tse-official-photo-frame {
-        width: 150px;
-        height: 200px;
-    }
-
-    .field-data-large {
-        font-size: 2rem;
-    }
-
-    .field-data-medium {
-        font-size: 1.2rem;
-    }
-
-    .key-lcd-corrige {
-        padding: 0.75rem 1.4rem;
-    }
-
-    .key-lcd-confirma {
-        padding: 0.85rem 2rem;
-    }
-
-    .key-main {
-        font-size: 1.1rem;
-    }
+/* Base: garante que o body sempre ocupe exatamente a tela sem scroll */
+html {
+    height: 100%;
+    height: 100dvh;
 }
 
-/* --- Tablet médio portrait (ex: iPad 9", 768px) --- */
-@media (max-width: 820px) and (orientation: portrait) {
+body {
+    min-height: 100dvh;
+    height: 100dvh;
+    overflow: hidden;
+}
+
+.urna-body {
+    overflow: hidden;
+}
+
+.urna-stage {
+    height: 100dvh;
+    min-height: 100dvh;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* O gabinete cresce para preencher o stage inteiro */
+.urna-physical-cabinet {
+    flex: 1;
+    height: 100%;
+    max-height: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* O bezel e o LCD também crescem */
+.screen-chassis-bezel {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.urna-lcd-display {
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.lcd-view {
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* Área de scroll dos candidatos ocupa o espaço disponível */
+.lcd-candidates-scroll-area {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+/* Confirmação também usa flex para preencher */
+.view-confirmacao {
+    display: flex;
+    flex-direction: column;
+}
+
+.confirm-content-grid {
+    flex: 1;
+    min-height: 0;
+}
+
+/* ============================================================
+   Tablets e smartphones — escalar os elementos internos
+   ============================================================ */
+
+/* Tablet portrait (largura até 1024px) */
+@media (max-width: 1024px) and (orientation: portrait) {
     .urna-stage {
-        padding: 0.75rem;
+        padding: 0.6rem 0.8rem;
     }
 
     .urna-physical-cabinet {
-        max-width: 520px;
-        padding: 14px 12px;
-        border-radius: 16px;
-        gap: 10px;
+        padding: clamp(8px, 1.5vh, 20px) clamp(10px, 1.8vw, 24px);
+        border-radius: clamp(12px, 2vw, 22px);
+        border-width: 3px;
+        gap: clamp(6px, 1vh, 14px);
     }
 
     .cabinet-brand-bar {
-        padding: 7px 12px;
-        gap: 8px;
+        padding: clamp(5px, 0.8vh, 12px) clamp(8px, 1.2vw, 18px);
+        flex-shrink: 0;
     }
 
     .fort-logo-img {
-        height: 30px;
+        height: clamp(22px, 3.5vh, 40px);
     }
 
     .cabinet-title-wrap h2 {
-        font-size: 1rem;
+        font-size: clamp(0.7rem, 1.8vw, 1.2rem);
     }
 
     .cabinet-title-wrap p {
-        font-size: 0.68rem;
+        font-size: clamp(0.55rem, 1.2vw, 0.82rem);
     }
 
     .cabinet-model-tag {
-        display: none;
+        font-size: clamp(0.55rem, 1vw, 0.78rem);
+        padding: 0.3rem 0.7rem;
     }
 
     .screen-chassis-bezel {
-        padding: 8px;
-        border-radius: 10px;
+        padding: clamp(4px, 0.8vh, 14px);
+        border-radius: clamp(8px, 1.5vw, 14px);
         border-width: 2px;
     }
 
     .urna-lcd-display {
-        min-height: 420px;
+        border-width: 3px;
+        border-radius: clamp(5px, 1vw, 9px);
+        min-height: 0;
     }
 
     .lcd-view {
-        padding: 12px 14px;
+        padding: clamp(8px, 1.5vh, 22px) clamp(10px, 1.8vw, 28px);
     }
 
     .lcd-header-bar {
-        flex-direction: row;
-        align-items: flex-end;
-        padding-bottom: 6px;
-        margin-bottom: 10px;
-    }
-
-    .lcd-cargo-title {
-        font-size: 1.25rem;
+        padding-bottom: clamp(4px, 0.8vh, 12px);
+        margin-bottom: clamp(6px, 1vh, 18px);
+        flex-shrink: 0;
     }
 
     .lcd-small-label {
-        font-size: 0.7rem;
+        font-size: clamp(0.6rem, 1.2vw, 1rem);
+    }
+
+    .lcd-cargo-title {
+        font-size: clamp(0.85rem, 2vw, 1.7rem);
+        margin-top: 0;
     }
 
     .lcd-instruction-badge {
-        font-size: 0.7rem;
-        padding: 0.25rem 0.5rem;
+        font-size: clamp(0.58rem, 1.1vw, 0.88rem);
+        padding: 0.25rem 0.6rem;
     }
 
     .candidates-visual-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
+        gap: clamp(8px, 1.5vw, 18px);
     }
 
     .card-photo-wrapper {
-        height: 130px;
+        height: clamp(100px, 18vh, 200px);
+    }
+
+    .card-info-content {
+        padding: clamp(4px, 0.8vh, 12px) clamp(6px, 1vw, 14px);
     }
 
     .candidate-card-name {
-        font-size: 0.9rem;
+        font-size: clamp(0.7rem, 1.5vw, 1.15rem);
     }
 
     .candidate-card-party {
-        font-size: 0.7rem;
-        margin-bottom: 6px;
+        font-size: clamp(0.58rem, 1.1vw, 0.85rem);
+        margin-bottom: clamp(4px, 0.8vh, 10px);
     }
 
     .btn-card-select {
-        padding: 0.4rem;
-        font-size: 0.72rem;
+        padding: clamp(0.3rem, 0.7vh, 0.65rem);
+        font-size: clamp(0.6rem, 1.1vw, 0.88rem);
     }
 
     .lcd-bottom-actions {
-        padding-top: 8px;
+        padding-top: clamp(5px, 1vh, 14px);
+        flex-shrink: 0;
     }
 
     .btn-lcd-branco {
-        padding: 0.6rem 1rem;
-        font-size: 0.9rem;
-    }
-
-    .confirm-content-grid {
-        gap: 14px;
+        padding: clamp(0.4rem, 0.9vh, 0.85rem) clamp(0.8rem, 1.5vw, 2rem);
+        font-size: clamp(0.75rem, 1.5vw, 1.1rem);
     }
 
     .tse-official-photo-frame {
-        width: 130px;
-        height: 175px;
+        width: clamp(100px, 16vw, 180px);
+        height: clamp(135px, 22vw, 240px);
     }
 
     .field-data-large {
-        font-size: 1.75rem;
+        font-size: clamp(1.3rem, 3.5vw, 2.6rem);
     }
 
     .field-data-medium {
-        font-size: 1.1rem;
+        font-size: clamp(0.9rem, 2.2vw, 1.5rem);
+    }
+
+    .field-title {
+        font-size: clamp(0.62rem, 1.2vw, 0.95rem);
+    }
+
+    .blank-huge-text {
+        font-size: clamp(2rem, 5vw, 3.8rem);
+    }
+
+    .blank-sub-info {
+        font-size: clamp(0.8rem, 1.8vw, 1.3rem);
+    }
+
+    .confirm-footer-bar {
+        padding-top: clamp(5px, 1vh, 16px);
+        flex-shrink: 0;
     }
 
     .key-lcd-corrige {
-        padding: 0.65rem 1.2rem;
+        padding: clamp(0.4rem, 0.9vh, 0.9rem) clamp(0.8rem, 1.5vw, 2rem);
     }
 
     .key-lcd-confirma {
-        padding: 0.75rem 1.8rem;
+        padding: clamp(0.5rem, 1vh, 1rem) clamp(1rem, 2vw, 3rem);
     }
 
     .key-main {
-        font-size: 1rem;
+        font-size: clamp(0.8rem, 1.8vw, 1.3rem);
     }
 
     .key-sub {
-        font-size: 0.55rem;
+        font-size: clamp(0.48rem, 0.9vw, 0.65rem);
+    }
+
+    .footer-help-text p {
+        font-size: clamp(0.6rem, 1.2vw, 1rem);
+    }
+
+    .footer-help-text small {
+        font-size: clamp(0.55rem, 1vw, 0.9rem);
+    }
+
+    .lock-shield-icon {
+        width: clamp(50px, 8vh, 90px);
+        height: clamp(50px, 8vh, 90px);
+        margin-bottom: clamp(0.5rem, 1.5vh, 1.5rem);
+    }
+
+    .lock-emoji {
+        font-size: clamp(1.5rem, 4vh, 3rem);
+    }
+
+    .lock-title {
+        font-size: clamp(1.4rem, 4vw, 2.8rem);
+        margin-bottom: clamp(0.3rem, 0.8vh, 0.6rem);
+    }
+
+    .lock-desc {
+        font-size: clamp(0.8rem, 2vw, 1.35rem);
+        margin-bottom: clamp(1rem, 2.5vh, 2.5rem);
+    }
+
+    .lock-system-strip {
+        font-size: clamp(0.58rem, 1.1vw, 0.85rem);
     }
 
     .gravando-box h2 {
-        font-size: 2.2rem;
+        font-size: clamp(2rem, 5vw, 3.8rem);
+        margin-bottom: clamp(0.8rem, 2vh, 2rem);
     }
 
-    .fim-box .fim-title {
-        font-size: 4rem;
+    .progress-bar-tse {
+        width: clamp(200px, 50vw, 380px);
+        height: clamp(14px, 2.5vh, 26px);
+    }
+
+    .fim-huge-title {
+        font-size: clamp(5rem, 18vw, 10.5rem);
+    }
+
+    .votou-label {
+        font-size: clamp(1.5rem, 4vw, 3.2rem);
+    }
+
+    .tse-seal-bottom {
+        font-size: clamp(0.6rem, 1.2vw, 0.95rem);
+        margin-top: clamp(0.8rem, 2vh, 2.5rem);
     }
 
     .cabinet-bottom-bar {
-        gap: 4px;
-        font-size: 0.65rem;
+        font-size: clamp(0.55rem, 1vw, 0.8rem);
+        flex-shrink: 0;
+        padding: clamp(3px, 0.5vh, 8px) clamp(6px, 1vw, 14px);
     }
 }
 
-/* --- Celular portrait (max 480px) --- */
-@media (max-width: 480px) and (orientation: portrait) {
+/* Celular portrait (largura até 600px) */
+@media (max-width: 600px) and (orientation: portrait) {
     .urna-stage {
-        padding: 0.3rem;
+        padding: 0.25rem 0.3rem;
     }
 
     .urna-physical-cabinet {
-        padding: 8px 6px;
+        padding: clamp(5px, 1.2vh, 10px) clamp(6px, 1.5vw, 10px);
         border-radius: 10px;
-        gap: 6px;
+        gap: clamp(4px, 0.8vh, 8px);
+        border-width: 2px;
     }
 
     .cabinet-brand-bar {
-        flex-direction: column;
-        text-align: center;
-        gap: 4px;
-        padding: 6px 8px;
+        flex-direction: row;
+        align-items: center;
+        padding: 4px 8px;
+    }
+
+    .fort-logo-img {
+        height: clamp(18px, 3vh, 28px);
     }
 
     .cabinet-title-wrap {
-        margin-left: 0;
+        margin-left: 8px;
     }
 
     .cabinet-title-wrap h2 {
-        font-size: 0.9rem;
+        font-size: clamp(0.62rem, 2.5vw, 0.9rem);
     }
 
     .cabinet-title-wrap p {
-        font-size: 0.6rem;
+        display: none;
     }
 
     .cabinet-model-tag {
@@ -1924,92 +1977,131 @@ body {
     }
 
     .screen-chassis-bezel {
-        padding: 5px;
+        padding: 4px;
         border-radius: 7px;
         border-width: 1.5px;
     }
 
     .urna-lcd-display {
-        min-height: 360px;
+        border-width: 2.5px;
+        border-radius: 5px;
+        min-height: 0;
     }
 
     .lcd-view {
-        padding: 8px 6px;
+        padding: clamp(6px, 1.5vh, 10px) clamp(7px, 2vw, 12px);
     }
 
     .lcd-header-bar {
         flex-direction: column;
         align-items: flex-start;
-        gap: 3px;
-        padding-bottom: 6px;
-        margin-bottom: 8px;
-    }
-
-    .lcd-cargo-title {
-        font-size: 1rem;
+        padding-bottom: 4px;
+        margin-bottom: 6px;
+        gap: 2px;
     }
 
     .lcd-small-label {
-        font-size: 0.65rem;
+        font-size: 0.6rem;
+    }
+
+    .lcd-cargo-title {
+        font-size: clamp(0.78rem, 3.5vw, 1rem);
+    }
+
+    .lcd-instruction-badge {
+        font-size: 0.6rem;
+        padding: 2px 5px;
+        align-self: flex-start;
     }
 
     .candidates-visual-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 7px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: clamp(5px, 1.5vw, 9px);
     }
 
     .card-photo-wrapper {
-        height: 95px;
+        height: clamp(80px, 18vh, 130px);
+    }
+
+    .card-info-content {
+        padding: 4px 5px;
     }
 
     .candidate-card-name {
-        font-size: 0.78rem;
+        font-size: clamp(0.62rem, 2.5vw, 0.82rem);
+        margin-bottom: 1px;
     }
 
     .candidate-card-party {
-        font-size: 0.62rem;
-        margin-bottom: 4px;
+        font-size: 0.58rem;
+        margin-bottom: 3px;
     }
 
     .btn-card-select {
-        padding: 0.3rem;
-        font-size: 0.65rem;
+        padding: 0.28rem;
+        font-size: 0.6rem;
     }
 
+    .lcd-bottom-actions {
+        padding-top: 5px;
+    }
+
+    .btn-lcd-branco {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.75rem;
+        gap: 6px;
+    }
+
+    .btn-branco-box {
+        width: 12px;
+        height: 12px;
+    }
+
+    /* Confirmação no celular: vertical */
     .confirm-content-grid {
         flex-direction: column-reverse;
-        text-align: center;
-        gap: 10px;
+        align-items: center;
+        gap: clamp(6px, 1.5vh, 12px);
         padding: 4px 0;
     }
 
     .confirm-info-col {
         align-items: center;
+        text-align: center;
         gap: 0.5rem;
     }
 
     .tse-official-photo-frame {
-        width: 110px;
-        height: 148px;
+        width: clamp(80px, 22vw, 120px);
+        height: clamp(108px, 30vw, 160px);
     }
 
     .field-data-large {
-        font-size: 1.4rem;
+        font-size: clamp(1.1rem, 5vw, 1.6rem);
     }
 
     .field-data-medium {
-        font-size: 0.95rem;
+        font-size: clamp(0.8rem, 3vw, 1rem);
+    }
+
+    .field-title {
+        font-size: 0.6rem;
     }
 
     .blank-huge-text {
-        font-size: 2.2rem;
+        font-size: clamp(1.6rem, 7vw, 2.5rem);
+    }
+
+    .blank-sub-info {
+        font-size: clamp(0.7rem, 2.5vw, 0.95rem);
     }
 
     .confirm-footer-bar {
         flex-direction: column;
-        gap: 8px;
+        gap: 6px;
         align-items: stretch;
         text-align: center;
+        padding-top: 6px;
     }
 
     .footer-buttons-group {
@@ -2021,281 +2113,235 @@ body {
 
     .key-lcd-corrige,
     .key-lcd-confirma {
-        padding: 0.6rem 0.4rem;
+        padding: 0.5rem 0.3rem;
         width: 100%;
     }
 
     .key-main {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
     }
 
     .key-sub {
-        font-size: 0.5rem;
+        font-size: 0.48rem;
+    }
+
+    .footer-help-text {
+        display: none;
     }
 
     .lock-shield-icon {
-        width: 52px;
-        height: 52px;
+        width: clamp(40px, 7vh, 60px);
+        height: clamp(40px, 7vh, 60px);
         margin-bottom: 0.5rem;
     }
 
+    .lock-emoji {
+        font-size: clamp(1.2rem, 3.5vh, 2rem);
+    }
+
     .lock-title {
-        font-size: 1.5rem;
+        font-size: clamp(1.2rem, 5vw, 1.9rem);
     }
 
     .lock-desc {
-        font-size: 0.85rem;
+        font-size: clamp(0.7rem, 3vw, 1rem);
         margin-bottom: 1rem;
     }
 
-    .gravando-box h2 {
-        font-size: 1.8rem;
-    }
-
-    .fim-box .fim-title {
-        font-size: 3rem;
-    }
-
-    .cabinet-bottom-bar {
+    .lock-system-strip {
+        font-size: 0.6rem;
         flex-direction: column;
         gap: 3px;
         text-align: center;
-        font-size: 0.58rem;
+    }
+
+    .gravando-box h2 {
+        font-size: clamp(1.6rem, 7vw, 2.5rem);
+        margin-bottom: 0.8rem;
+    }
+
+    .progress-bar-tse {
+        width: 80%;
+        height: 16px;
+    }
+
+    .fim-huge-title {
+        font-size: clamp(4rem, 20vw, 7rem);
+    }
+
+    .votou-label {
+        font-size: clamp(1.2rem, 5vw, 2rem);
+    }
+
+    .tse-seal-bottom {
+        font-size: 0.62rem;
+        margin-top: 0.8rem;
+    }
+
+    .cabinet-bottom-bar {
+        font-size: 0.55rem;
+        padding: 3px 5px;
     }
 }
 
-/* ==========================================================================
-   9. MODO HORIZONTAL (LANDSCAPE) — APENAS TABLETS E SMARTPHONES (SEM SCROLL)
-      Usa combinação de max-width + orientation para NUNCA afetar desktops.
-   ========================================================================== */
+/* ============================================================
+   LANDSCAPE — tablet e smartphone (sem scroll, tudo na tela)
+   Garante que nunca afeta desktop: max-width E max-height
+   ============================================================ */
 
-/* --- Tablet landscape (ex: iPad deitado, até 1180px wide e 900px tall) --- */
-@media (orientation: landscape) and (max-width: 1180px) and (max-height: 900px) {
-    html, body.urna-body {
-        height: 100dvh;
-        overflow: hidden !important;
-        margin: 0;
-        padding: 0;
-    }
-
+/* Tablet landscape: iPad deitado e similares */
+@media (orientation: landscape) and (max-width: 1280px) and (max-height: 960px) {
     .urna-stage {
-        height: 100dvh;
-        padding: 6px 14px;
-        display: flex;
-        align-items: stretch;
-        justify-content: center;
-        overflow: hidden;
-        box-sizing: border-box;
+        padding: clamp(4px, 0.6vh, 10px) clamp(8px, 0.8vw, 18px);
     }
 
     .urna-physical-cabinet {
-        height: 100%;
-        max-height: 100%;
-        max-width: 920px;
-        width: 100%;
-        padding: 8px 16px 8px;
-        border-radius: 14px;
+        max-width: 1100px;
+        padding: clamp(6px, 0.8vh, 12px) clamp(10px, 1vw, 20px);
+        border-radius: clamp(10px, 1.5vw, 16px);
         border-width: 3px;
-        gap: 6px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        box-sizing: border-box;
+        gap: clamp(4px, 0.6vh, 10px);
     }
 
-    /* Cabeçalho compacto */
     .cabinet-brand-bar {
-        padding: 5px 12px;
-        border-radius: 8px;
+        padding: clamp(4px, 0.6vh, 9px) clamp(8px, 0.9vw, 16px);
         flex-shrink: 0;
-        flex-direction: row;
         align-items: center;
-        gap: 10px;
     }
 
     .fort-logo-img {
-        height: 26px;
-    }
-
-    .cabinet-logo-wrapper {
-        padding: 3px 8px;
-    }
-
-    .cabinet-title-wrap {
-        margin-left: 10px;
+        height: clamp(18px, 3.5vh, 34px);
     }
 
     .cabinet-title-wrap h2 {
-        font-size: 0.9rem;
-        letter-spacing: 0.03em;
+        font-size: clamp(0.65rem, 1.6vh, 1rem);
         line-height: 1.1;
     }
 
     .cabinet-title-wrap p {
-        font-size: 0.65rem;
+        font-size: clamp(0.52rem, 1.1vh, 0.75rem);
         line-height: 1.1;
     }
 
     .cabinet-model-tag {
-        display: inline-block;
+        font-size: clamp(0.52rem, 1vh, 0.72rem);
         padding: 2px 8px;
-        font-size: 0.65rem;
     }
 
-    /* Moldura Bezel e Visor */
     .screen-chassis-bezel {
-        flex: 1;
-        min-height: 0;
-        padding: 5px;
-        border-radius: 10px;
+        padding: clamp(4px, 0.6vh, 8px);
+        border-radius: clamp(7px, 1.2vw, 12px);
         border-width: 2px;
-        display: flex;
-        flex-direction: column;
     }
 
     .urna-lcd-display {
-        flex: 1;
-        min-height: 0;
-        height: 100%;
-        border-radius: 7px;
         border-width: 2.5px;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
+        border-radius: clamp(4px, 0.8vw, 8px);
+        min-height: 0;
     }
 
     .lcd-view {
-        height: 100%;
-        padding: 8px 14px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        overflow: hidden;
-        box-sizing: border-box;
+        padding: clamp(6px, 0.9vh, 14px) clamp(10px, 1.2vw, 20px);
     }
 
-    /* Cabeçalho do LCD */
     .lcd-header-bar {
-        padding-bottom: 4px;
-        margin-bottom: 5px;
-        border-bottom-width: 2px;
-        flex-shrink: 0;
+        padding-bottom: clamp(3px, 0.5vh, 8px);
+        margin-bottom: clamp(4px, 0.6vh, 12px);
         flex-direction: row;
         align-items: flex-end;
+        flex-shrink: 0;
     }
 
     .lcd-small-label {
-        font-size: 0.68rem;
+        font-size: clamp(0.55rem, 1.1vh, 0.85rem);
     }
 
     .lcd-cargo-title {
-        font-size: 1rem;
+        font-size: clamp(0.78rem, 1.8vh, 1.2rem);
         margin-top: 0;
     }
 
     .lcd-instruction-badge {
-        font-size: 0.68rem;
+        font-size: clamp(0.55rem, 1.1vh, 0.82rem);
         padding: 2px 7px;
     }
 
-    /* Área de candidatos */
-    .lcd-candidates-scroll-area {
-        flex: 1;
-        min-height: 0;
-        overflow-y: auto;
-        margin-bottom: 5px;
-        padding-right: 4px;
-    }
-
     .candidates-visual-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 8px;
-        height: 100%;
-    }
-
-    .candidate-select-card {
-        border-width: 2px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+        grid-template-columns: repeat(auto-fit, minmax(clamp(110px, 16vw, 180px), 1fr));
+        gap: clamp(6px, 1vw, 14px);
     }
 
     .card-photo-wrapper {
         flex: 1;
-        min-height: 60px;
-        max-height: 105px;
+        min-height: 55px;
+        max-height: clamp(80px, 14vh, 140px);
         height: auto;
         border-bottom-width: 2px;
     }
 
     .card-info-content {
-        padding: 4px 6px;
+        padding: clamp(3px, 0.5vh, 8px) clamp(5px, 0.6vw, 10px);
     }
 
     .candidate-card-name {
-        font-size: 0.8rem;
+        font-size: clamp(0.62rem, 1.3vh, 0.9rem);
         margin-bottom: 1px;
     }
 
     .candidate-card-party {
-        font-size: 0.64rem;
-        margin-bottom: 3px;
+        font-size: clamp(0.52rem, 1vh, 0.72rem);
+        margin-bottom: clamp(2px, 0.4vh, 6px);
     }
 
     .btn-card-select {
-        padding: 3px 6px;
-        font-size: 0.68rem;
+        padding: clamp(2px, 0.4vh, 5px) clamp(4px, 0.5vw, 8px);
+        font-size: clamp(0.55rem, 1vh, 0.75rem);
     }
 
     .lcd-bottom-actions {
-        padding-top: 4px;
+        padding-top: clamp(3px, 0.5vh, 8px);
         border-top-width: 2px;
         flex-shrink: 0;
     }
 
     .btn-lcd-branco {
-        padding: 5px 14px;
-        font-size: 0.82rem;
+        padding: clamp(3px, 0.5vh, 7px) clamp(10px, 1.2vw, 18px);
+        font-size: clamp(0.65rem, 1.3vh, 0.95rem);
         border-width: 2px;
     }
 
     .btn-branco-box {
-        width: 12px;
-        height: 12px;
+        width: 11px;
+        height: 11px;
     }
 
-    /* Tela de confirmação */
+    /* Confirmação horizontal */
     .confirm-content-grid {
-        flex: 1;
-        min-height: 0;
-        display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
-        gap: 18px;
-        padding: 4px 10px;
+        gap: clamp(10px, 2vw, 24px);
+        padding: clamp(3px, 0.5vh, 8px) clamp(8px, 1vw, 16px);
     }
 
     .confirm-info-col {
         flex: 1;
-        gap: 6px;
-        justify-content: center;
+        gap: clamp(5px, 0.8vh, 14px);
         align-items: flex-start;
         text-align: left;
     }
 
     .field-title {
-        font-size: 0.7rem;
+        font-size: clamp(0.55rem, 1.1vh, 0.82rem);
     }
 
     .field-data-large {
-        font-size: 1.4rem;
+        font-size: clamp(1rem, 2.5vh, 1.9rem);
         line-height: 1.1;
     }
 
     .field-data-medium {
-        font-size: 1rem;
+        font-size: clamp(0.75rem, 1.8vh, 1.2rem);
     }
 
     .confirm-photo-col {
@@ -2303,26 +2349,26 @@ body {
     }
 
     .tse-official-photo-frame {
-        width: 100px;
-        height: 135px;
+        width: clamp(70px, 10vw, 140px);
+        height: clamp(95px, 14vw, 190px);
         border-width: 2px;
     }
 
     .photo-caption {
-        font-size: 0.68rem;
+        font-size: clamp(0.55rem, 1vh, 0.78rem);
     }
 
     .confirm-blank-col .blank-huge-text {
-        font-size: 2.2rem;
+        font-size: clamp(1.6rem, 3.5vh, 2.8rem);
     }
 
     .confirm-blank-col .blank-sub-info {
-        font-size: 0.9rem;
+        font-size: clamp(0.7rem, 1.5vh, 1.1rem);
     }
 
     .confirm-footer-bar {
         border-top-width: 2px;
-        padding-top: 5px;
+        padding-top: clamp(3px, 0.5vh, 9px);
         flex-shrink: 0;
         flex-direction: row;
         justify-content: space-between;
@@ -2330,139 +2376,126 @@ body {
     }
 
     .footer-help-text p {
-        font-size: 0.72rem;
+        font-size: clamp(0.58rem, 1.2vh, 0.88rem);
     }
 
     .footer-help-text small {
-        font-size: 0.62rem;
+        font-size: clamp(0.5rem, 1vh, 0.75rem);
     }
 
     .footer-buttons-group {
         display: flex;
-        gap: 8px;
+        gap: clamp(6px, 1vw, 14px);
         width: auto;
     }
 
     .key-lcd-corrige {
-        padding: 5px 16px;
+        padding: clamp(4px, 0.7vh, 9px) clamp(12px, 1.5vw, 22px);
         border-radius: 6px;
+        box-shadow: 0 3px 0 #7a2a00;
     }
 
     .key-lcd-confirma {
-        padding: 6px 22px;
+        padding: clamp(5px, 0.8vh, 10px) clamp(18px, 2.2vw, 32px);
         border-radius: 6px;
+        box-shadow: 0 3px 0 #003a1b;
     }
 
     .key-main {
-        font-size: 0.9rem;
+        font-size: clamp(0.7rem, 1.5vh, 1.05rem);
     }
 
     .key-sub {
-        font-size: 0.52rem;
+        font-size: clamp(0.42rem, 0.85vh, 0.62rem);
     }
 
     /* Tela bloqueada */
     .lock-shield-icon {
-        width: 48px;
-        height: 48px;
-        margin-bottom: 0.4rem;
+        width: clamp(36px, 6vh, 64px);
+        height: clamp(36px, 6vh, 64px);
+        margin-bottom: clamp(0.3rem, 0.8vh, 0.9rem);
         border-width: 2.5px;
     }
 
     .lock-emoji {
-        font-size: 1.5rem;
+        font-size: clamp(1.1rem, 3vh, 2.2rem);
     }
 
     .lock-title {
-        font-size: 1.3rem;
+        font-size: clamp(1rem, 2.8vh, 2rem);
         margin-bottom: 0.2rem;
     }
 
     .lock-desc {
-        font-size: 0.84rem;
-        margin-bottom: 0.7rem;
+        font-size: clamp(0.65rem, 1.6vh, 1.1rem);
+        margin-bottom: clamp(0.4rem, 1vh, 1.2rem);
     }
 
     .lock-system-strip {
-        padding-top: 0.4rem;
-        font-size: 0.62rem;
+        font-size: clamp(0.5rem, 1vh, 0.72rem);
         flex-direction: row;
         justify-content: space-around;
     }
 
     /* Gravando e FIM */
     .gravando-box h2 {
-        font-size: 1.7rem;
-        margin-bottom: 0.5rem;
+        font-size: clamp(1.4rem, 3.5vh, 2.8rem);
+        margin-bottom: clamp(0.4rem, 1vh, 1.2rem);
     }
 
     .progress-bar-tse {
-        width: 200px;
-        height: 12px;
+        width: clamp(160px, 40vw, 340px);
+        height: clamp(10px, 2vh, 18px);
     }
 
-    .fim-box .fim-title {
-        font-size: 3.2rem;
-        margin-bottom: 0.1rem;
+    .fim-huge-title {
+        font-size: clamp(4rem, 14vh, 9rem);
     }
 
-    .fim-box .votou-label {
-        font-size: 1.1rem;
+    .votou-label {
+        font-size: clamp(1.2rem, 3vh, 2.5rem);
     }
 
     .tse-seal-bottom {
-        font-size: 0.62rem;
-        margin-top: 0.3rem;
+        font-size: clamp(0.5rem, 1vh, 0.78rem);
+        margin-top: clamp(0.3rem, 0.8vh, 1.2rem);
     }
 
     /* Barra inferior */
     .cabinet-bottom-bar {
-        padding: 3px 6px;
+        padding: clamp(2px, 0.4vh, 6px) clamp(5px, 0.7vw, 12px);
         flex-shrink: 0;
-        font-size: 0.6rem;
+        font-size: clamp(0.5rem, 1vh, 0.72rem);
         flex-direction: row;
         justify-content: space-between;
     }
 }
 
-/* --- Smartphone landscape (telas pequenas, até 900px wide e 500px tall) --- */
-@media (orientation: landscape) and (max-width: 900px) and (max-height: 500px) {
-    html, body.urna-body {
-        height: 100dvh;
-        overflow: hidden !important;
-    }
-
+/* Smartphone landscape: celular deitado (pequeno) */
+@media (orientation: landscape) and (max-height: 500px) {
     .urna-stage {
-        height: 100dvh;
-        padding: 3px 8px;
-        align-items: stretch;
-        overflow: hidden;
-        box-sizing: border-box;
+        padding: 3px 6px;
     }
 
     .urna-physical-cabinet {
-        height: 100%;
-        padding: 5px 10px;
-        border-radius: 10px;
+        padding: 4px 8px;
+        border-radius: 8px;
         border-width: 2px;
         gap: 4px;
-        display: flex;
-        flex-direction: column;
-        box-sizing: border-box;
     }
 
     .cabinet-brand-bar {
-        padding: 3px 8px;
+        padding: 3px 7px;
         flex-shrink: 0;
         gap: 6px;
     }
 
     .fort-logo-img {
-        height: 20px;
+        height: clamp(15px, 3vh, 22px);
     }
 
     .cabinet-title-wrap h2 {
-        font-size: 0.78rem;
+        font-size: clamp(0.55rem, 1.8vh, 0.82rem);
         line-height: 1.1;
     }
 
@@ -2472,71 +2505,49 @@ body {
     }
 
     .screen-chassis-bezel {
-        flex: 1;
-        min-height: 0;
         padding: 3px;
-        border-radius: 6px;
+        border-radius: 5px;
         border-width: 1.5px;
-        display: flex;
-        flex-direction: column;
     }
 
     .urna-lcd-display {
-        flex: 1;
-        min-height: 0;
-        border-radius: 5px;
         border-width: 2px;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
+        border-radius: 4px;
     }
 
     .lcd-view {
-        height: 100%;
         padding: 4px 8px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        overflow: hidden;
-        box-sizing: border-box;
     }
 
     .lcd-header-bar {
-        padding-bottom: 3px;
+        padding-bottom: 2px;
         margin-bottom: 3px;
-        flex-shrink: 0;
         flex-direction: row;
         align-items: flex-end;
+        flex-shrink: 0;
     }
 
     .lcd-small-label {
-        font-size: 0.6rem;
+        font-size: 0.55rem;
     }
 
     .lcd-cargo-title {
-        font-size: 0.85rem;
+        font-size: clamp(0.65rem, 1.8vh, 0.9rem);
     }
 
     .lcd-instruction-badge {
-        font-size: 0.6rem;
+        font-size: 0.55rem;
         padding: 1px 5px;
     }
 
-    .lcd-candidates-scroll-area {
-        flex: 1;
-        min-height: 0;
-        overflow-y: auto;
-        margin-bottom: 3px;
-    }
-
     .candidates-visual-grid {
-        grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
         gap: 5px;
     }
 
     .card-photo-wrapper {
-        height: 60px;
-        min-height: 60px;
+        height: clamp(50px, 10vh, 80px);
+        min-height: 50px;
     }
 
     .card-info-content {
@@ -2544,17 +2555,17 @@ body {
     }
 
     .candidate-card-name {
-        font-size: 0.68rem;
+        font-size: 0.62rem;
     }
 
     .candidate-card-party {
-        font-size: 0.56rem;
+        font-size: 0.52rem;
         margin-bottom: 2px;
     }
 
     .btn-card-select {
-        padding: 2px 4px;
-        font-size: 0.58rem;
+        padding: 2px 3px;
+        font-size: 0.52rem;
     }
 
     .lcd-bottom-actions {
@@ -2563,435 +2574,122 @@ body {
     }
 
     .btn-lcd-branco {
-        padding: 3px 10px;
-        font-size: 0.72rem;
+        padding: 3px 9px;
+        font-size: 0.65rem;
     }
 
     .confirm-content-grid {
         flex-direction: row;
-        flex: 1;
-        min-height: 0;
         align-items: center;
-        gap: 10px;
-        padding: 2px 8px;
-    }
-
-    .tse-official-photo-frame {
-        width: 65px;
-        height: 88px;
-    }
-
-    .field-data-large {
-        font-size: 1.1rem;
-    }
-
-    .field-data-medium {
-        font-size: 0.82rem;
-    }
-
-    .confirm-footer-bar {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        padding-top: 3px;
-        flex-shrink: 0;
-    }
-
-    .footer-buttons-group {
-        display: flex;
-        gap: 6px;
-        width: auto;
-    }
-
-    .key-lcd-corrige {
-        padding: 4px 10px;
-    }
-
-    .key-lcd-confirma {
-        padding: 4px 14px;
-    }
-
-    .key-main {
-        font-size: 0.78rem;
-    }
-
-    .lock-title {
-        font-size: 1.1rem;
-    }
-
-    .lock-desc {
-        font-size: 0.75rem;
-        margin-bottom: 0.4rem;
-    }
-
-    .fim-box .fim-title {
-        font-size: 2.5rem;
-    }
-
-    .cabinet-bottom-bar {
-        padding: 2px 4px;
-        flex-shrink: 0;
-        font-size: 0.52rem;
-        flex-direction: row;
-    }
-}
-
-/* ==========================================================================
-   9. MODO HORIZONTAL (LANDSCAPE) PARA TABLETS & SMARTPHONES (SEM SCROLL)
-   ========================================================================== */
-@media (orientation: landscape) and (max-height: 850px), (max-height: 650px) {
-    html, body.urna-body {
-        height: 100vh;
-        height: 100dvh;
-        overflow: hidden !important;
-        margin: 0;
-        padding: 0;
-    }
-
-    .urna-stage {
-        height: 100vh;
-        height: 100dvh;
-        padding: 4px 10px;
-        display: flex;
-        align-items: stretch;
-        justify-content: center;
-        overflow: hidden;
-        box-sizing: border-box;
-    }
-
-    .urna-physical-cabinet {
-        height: 100%;
-        max-height: 100%;
-        padding: 6px 12px 6px;
-        border-radius: 12px;
-        border-width: 2px;
-        gap: 4px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        box-sizing: border-box;
-    }
-
-    /* Cabeçalho compacto */
-    .cabinet-brand-bar {
-        padding: 4px 10px;
-        border-radius: 6px;
-        flex-shrink: 0;
-        min-height: 34px;
-    }
-
-    .fort-logo-img {
-        height: 24px;
-    }
-
-    .cabinet-logo-wrapper {
-        padding: 3px 8px;
-    }
-
-    .cabinet-title-wrap {
-        margin-left: 12px;
-    }
-
-    .cabinet-title-wrap h2 {
-        font-size: 0.85rem;
-        letter-spacing: 0.03em;
-        line-height: 1.1;
-    }
-
-    .cabinet-title-wrap p {
-        font-size: 0.62rem;
-        line-height: 1.1;
-    }
-
-    .cabinet-model-tag {
-        display: inline-block;
-        padding: 2px 8px;
-        font-size: 0.65rem;
-    }
-
-    /* Moldura Bezel e Visor */
-    .screen-chassis-bezel {
-        flex: 1;
-        min-height: 0;
-        padding: 4px;
-        border-radius: 8px;
-        border-width: 1.5px;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .urna-lcd-display {
-        flex: 1;
-        min-height: 0;
-        height: 100%;
-        border-radius: 6px;
-        border-width: 2.5px;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-    }
-
-    .lcd-view {
-        height: 100%;
-        padding: 6px 12px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        overflow: hidden;
-        box-sizing: border-box;
-    }
-
-    /* 1. Escolha de Candidatos */
-    .lcd-header-bar {
-        padding-bottom: 3px;
-        margin-bottom: 4px;
-        border-bottom-width: 2px;
-        flex-shrink: 0;
-        flex-direction: row;
-        align-items: flex-end;
-    }
-
-    .lcd-small-label {
-        font-size: 0.65rem;
-    }
-
-    .lcd-cargo-title {
-        font-size: 0.95rem;
-        margin-top: 0;
-    }
-
-    .lcd-instruction-badge {
-        font-size: 0.65rem;
+        gap: 8px;
         padding: 2px 6px;
     }
 
-    .lcd-candidates-scroll-area {
-        flex: 1;
-        min-height: 0;
-        overflow-y: auto;
-        margin-bottom: 4px;
-        padding-right: 4px;
-    }
-
-    .candidates-visual-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
-        gap: 8px;
-        height: 100%;
-    }
-
-    .candidate-select-card {
-        border-width: 2px;
-        box-shadow: 0 3px 0 rgba(0,0,0,0.15);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-
-    .card-photo-wrapper {
-        flex: 1;
-        min-height: 65px;
-        max-height: 115px;
-        height: auto;
-        border-bottom-width: 2px;
-    }
-
-    .card-info-content {
-        padding: 4px 6px;
-    }
-
-    .candidate-card-name {
-        font-size: 0.78rem;
-        margin-bottom: 1px;
-    }
-
-    .candidate-card-party {
-        font-size: 0.62rem;
-        margin-bottom: 3px;
-    }
-
-    .btn-card-select {
-        padding: 3px 6px;
-        font-size: 0.65rem;
-    }
-
-    .lcd-bottom-actions {
-        padding-top: 3px;
-        border-top-width: 2px;
-        flex-shrink: 0;
-    }
-
-    .btn-lcd-branco {
-        padding: 4px 14px;
-        font-size: 0.8rem;
-        border-width: 2px;
-        box-shadow: 0 2px 0 #555;
-    }
-
-    .btn-branco-box {
-        width: 12px;
-        height: 12px;
-    }
-
-    /* 2. Confirmação de Voto */
-    .confirm-content-grid {
-        flex: 1;
-        min-height: 0;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        padding: 4px 10px;
-    }
-
-    .confirm-info-col {
-        flex: 1;
-        gap: 6px;
-        justify-content: center;
-        align-items: flex-start;
-        text-align: left;
-    }
-
-    .field-title {
-        font-size: 0.68rem;
+    .tse-official-photo-frame {
+        width: clamp(50px, 9vw, 75px);
+        height: clamp(68px, 12vw, 100px);
     }
 
     .field-data-large {
-        font-size: 1.35rem;
-        line-height: 1.1;
+        font-size: clamp(0.9rem, 2.5vh, 1.3rem);
     }
 
     .field-data-medium {
-        font-size: 0.95rem;
+        font-size: clamp(0.7rem, 1.8vh, 0.95rem);
     }
 
-    .confirm-photo-col {
-        flex-shrink: 0;
-    }
-
-    .tse-official-photo-frame {
-        width: 95px;
-        height: 125px;
-        border-width: 2px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-
-    .photo-caption {
-        font-size: 0.68rem;
-    }
-
-    .confirm-blank-col .blank-huge-text {
-        font-size: 2.2rem;
-    }
-
-    .confirm-blank-col .blank-sub-info {
-        font-size: 0.95rem;
+    .field-title {
+        font-size: 0.55rem;
     }
 
     .confirm-footer-bar {
-        border-top-width: 2px;
-        padding-top: 4px;
-        flex-shrink: 0;
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
+        padding-top: 3px;
+        flex-shrink: 0;
     }
 
-    .footer-help-text p {
-        font-size: 0.72rem;
-    }
-
-    .footer-help-text small {
-        font-size: 0.62rem;
+    .footer-help-text {
+        display: none;
     }
 
     .footer-buttons-group {
         display: flex;
-        gap: 8px;
+        gap: 5px;
         width: auto;
     }
 
     .key-lcd-corrige {
-        padding: 5px 14px;
-        border-radius: 6px;
-        box-shadow: 0 3px 0 #7a2a00;
+        padding: 4px 9px;
     }
 
     .key-lcd-confirma {
-        padding: 6px 20px;
-        border-radius: 6px;
-        box-shadow: 0 3px 0 #003a1b;
+        padding: 4px 12px;
     }
 
     .key-main {
-        font-size: 0.88rem;
+        font-size: 0.72rem;
     }
 
     .key-sub {
-        font-size: 0.5rem;
+        font-size: 0.42rem;
     }
 
-    /* 3. Tela Bloqueada */
     .lock-shield-icon {
-        width: 46px;
-        height: 46px;
+        width: clamp(28px, 5vh, 44px);
+        height: clamp(28px, 5vh, 44px);
         margin-bottom: 0.3rem;
-        border-width: 2.5px;
     }
 
     .lock-emoji {
-        font-size: 1.4rem;
+        font-size: clamp(0.9rem, 2.5vh, 1.5rem);
     }
 
     .lock-title {
-        font-size: 1.25rem;
-        margin-bottom: 0.2rem;
+        font-size: clamp(0.85rem, 2.5vh, 1.3rem);
     }
 
     .lock-desc {
-        font-size: 0.82rem;
-        margin-bottom: 0.6rem;
+        font-size: clamp(0.6rem, 1.5vh, 0.85rem);
+        margin-bottom: 0.4rem;
     }
 
     .lock-system-strip {
-        padding-top: 0.4rem;
-        font-size: 0.62rem;
+        font-size: 0.5rem;
+        padding-top: 0.3rem;
         flex-direction: row;
         justify-content: space-around;
     }
 
-    /* 4. Gravando e FIM */
     .gravando-box h2 {
-        font-size: 1.6rem;
-        margin-bottom: 0.6rem;
+        font-size: clamp(1.1rem, 3vh, 1.8rem);
+        margin-bottom: 0.4rem;
     }
 
     .progress-bar-tse {
-        width: 200px;
-        height: 12px;
+        width: 50vw;
+        height: 10px;
     }
 
-    .fim-box .fim-title {
-        font-size: 3.2rem;
-        margin-bottom: 0.1rem;
+    .fim-huge-title {
+        font-size: clamp(2.5rem, 10vh, 5rem);
     }
 
-    .fim-box .votou-label {
-        font-size: 1.1rem;
-    }
-
-    .tse-seal-bottom {
-        font-size: 0.62rem;
+    .votou-label {
+        font-size: clamp(0.9rem, 2.5vh, 1.5rem);
         margin-top: 0.3rem;
     }
 
-    /* Barra inferior */
+    .tse-seal-bottom {
+        font-size: 0.5rem;
+        margin-top: 0.3rem;
+    }
+
     .cabinet-bottom-bar {
         padding: 2px 4px;
         flex-shrink: 0;
-        font-size: 0.58rem;
+        font-size: 0.5rem;
         flex-direction: row;
-        justify-content: space-between;
     }
 }
