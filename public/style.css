@@ -289,14 +289,15 @@ body {
 
 .candidates-visual-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 22px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    align-content: start;
 }
 
 .candidate-select-card {
     background: #ffffff;
     border: 3px solid #000;
-    border-radius: 8px;
+    border-radius: 10px;
     overflow: hidden;
     cursor: pointer;
     display: flex;
@@ -317,57 +318,64 @@ body {
     box-shadow: 0 2px 0 rgba(0,0,0,0.3);
 }
 
+/* Foto com proporção 3:4 — identificável em qualquer tamanho de tela */
 .card-photo-wrapper {
     width: 100%;
-    height: 220px;
-    background-color: #e2e8f0;
+    aspect-ratio: 3 / 4;
+    background-color: #d1d5db;
     overflow: hidden;
     border-bottom: 3px solid #000;
+    position: relative;
+    flex-shrink: 0;
 }
 
 .card-photo-wrapper img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: top center;
+    display: block;
 }
 
+/* Rodapé compacto: nome + departamento + botão */
 .card-info-content {
-    padding: 12px 14px;
+    padding: 10px 12px;
     text-align: center;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    flex: 1;
+    gap: 6px;
+    flex-shrink: 0;
 }
 
 .candidate-card-name {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     font-weight: 900;
     color: #000;
     text-transform: uppercase;
-    margin-bottom: 4px;
-    line-height: 1.2;
+    line-height: 1.15;
+    margin: 0;
 }
 
 .candidate-card-party {
-    font-size: 0.85rem;
+    font-size: 0.78rem;
     font-weight: 700;
     color: #475569;
     text-transform: uppercase;
-    margin-bottom: 10px;
+    margin: 0;
 }
 
 .btn-card-select {
     background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
     color: #ffffff;
     border: 1px solid var(--fort-yellow);
-    padding: 0.65rem;
-    font-size: 0.9rem;
+    padding: 0.55rem;
+    font-size: 0.85rem;
     font-weight: 900;
     border-radius: 4px;
     cursor: pointer;
     letter-spacing: 0.05em;
     transition: all 0.15s;
+    margin-top: 2px;
 }
 
 .candidate-select-card:hover .btn-card-select {
@@ -375,6 +383,7 @@ body {
     border-color: var(--fort-red);
     color: #ffffff;
 }
+
 
 .lcd-bottom-actions {
     border-top: 3px solid #000;
@@ -1618,16 +1627,8 @@ body {
     margin-bottom: 10px;
 }
 
-.winner-score-badge {
-    display: inline-block;
-    background: linear-gradient(135deg, var(--fort-red) 0%, var(--fort-red-dark) 100%);
-    color: #ffffff;
-    font-size: 1.1rem;
-    font-weight: 900;
-    padding: 0.5rem 1.4rem;
     border-radius: 30px;
-    box-shadow: 0 4px 15px rgba(232, 65, 47, 0.4);
-    margin-bottom: 1.5rem;
+    letter-spacing: 0.06em;
 }
 
 .winner-actions-group {
@@ -1637,11 +1638,10 @@ body {
 
 /* ==========================================================================
    8. RESPONSIVIDADE — URNA OCUPA 100% DA TELA EM QUALQUER DISPOSITIVO
-   Estratégia: html/body/stage com 100dvh, cabinet com flex:1 e height:100%,
-   elementos internos escalam com clamp() e unidades relativas.
+   Fotos com aspect-ratio 3/4 — sempre identificáveis em qualquer tela.
+   No landscape, height fixo compacto para caber sem scroll.
    ========================================================================== */
 
-/* Base: garante que o body sempre ocupe exatamente a tela sem scroll */
 html {
     height: 100%;
     height: 100dvh;
@@ -1664,7 +1664,6 @@ body {
     box-sizing: border-box;
 }
 
-/* O gabinete cresce para preencher o stage inteiro */
 .urna-physical-cabinet {
     flex: 1;
     height: 100%;
@@ -1673,7 +1672,6 @@ body {
     overflow: hidden;
 }
 
-/* O bezel e o LCD também crescem */
 .screen-chassis-bezel {
     flex: 1;
     min-height: 0;
@@ -1699,14 +1697,12 @@ body {
     box-sizing: border-box;
 }
 
-/* Área de scroll dos candidatos ocupa o espaço disponível */
 .lcd-candidates-scroll-area {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
 }
 
-/* Confirmação também usa flex para preencher */
 .view-confirmacao {
     display: flex;
     flex-direction: column;
@@ -1717,11 +1713,10 @@ body {
     min-height: 0;
 }
 
-/* ============================================================
-   Tablets e smartphones — escalar os elementos internos
-   ============================================================ */
-
-/* Tablet portrait (largura até 1024px) */
+/* ======================================================
+   PORTRAIT — Tablet (max-width: 1024px)
+   Grid 3 colunas, fotos com aspect-ratio 3/4
+   ====================================================== */
 @media (max-width: 1024px) and (orientation: portrait) {
     .urna-stage {
         padding: 0.6rem 0.8rem;
@@ -1737,19 +1732,12 @@ body {
     .cabinet-brand-bar {
         padding: clamp(5px, 0.8vh, 12px) clamp(8px, 1.2vw, 18px);
         flex-shrink: 0;
+        align-items: center;
     }
 
-    .fort-logo-img {
-        height: clamp(22px, 3.5vh, 40px);
-    }
-
-    .cabinet-title-wrap h2 {
-        font-size: clamp(0.7rem, 1.8vw, 1.2rem);
-    }
-
-    .cabinet-title-wrap p {
-        font-size: clamp(0.55rem, 1.2vw, 0.82rem);
-    }
+    .fort-logo-img { height: clamp(22px, 3.5vh, 40px); }
+    .cabinet-title-wrap h2 { font-size: clamp(0.7rem, 1.8vw, 1.2rem); }
+    .cabinet-title-wrap p { font-size: clamp(0.55rem, 1.2vw, 0.82rem); }
 
     .cabinet-model-tag {
         font-size: clamp(0.55rem, 1vw, 0.78rem);
@@ -1765,7 +1753,6 @@ body {
     .urna-lcd-display {
         border-width: 3px;
         border-radius: clamp(5px, 1vw, 9px);
-        min-height: 0;
     }
 
     .lcd-view {
@@ -1776,47 +1763,37 @@ body {
         padding-bottom: clamp(4px, 0.8vh, 12px);
         margin-bottom: clamp(6px, 1vh, 18px);
         flex-shrink: 0;
+        flex-direction: row;
+        align-items: flex-end;
     }
 
-    .lcd-small-label {
-        font-size: clamp(0.6rem, 1.2vw, 1rem);
-    }
-
-    .lcd-cargo-title {
-        font-size: clamp(0.85rem, 2vw, 1.7rem);
-        margin-top: 0;
-    }
+    .lcd-small-label { font-size: clamp(0.6rem, 1.2vw, 1rem); }
+    .lcd-cargo-title { font-size: clamp(0.85rem, 2vw, 1.7rem); margin-top: 0; }
 
     .lcd-instruction-badge {
         font-size: clamp(0.58rem, 1.1vw, 0.88rem);
         padding: 0.25rem 0.6rem;
     }
 
+    /* 3 colunas em tablet — fotos identificáveis com aspect-ratio */
     .candidates-visual-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: clamp(8px, 1.5vw, 18px);
     }
 
-    .card-photo-wrapper {
-        height: clamp(100px, 18vh, 200px);
-    }
+    .card-photo-wrapper { border-bottom-width: 2px; }
 
     .card-info-content {
-        padding: clamp(4px, 0.8vh, 12px) clamp(6px, 1vw, 14px);
+        padding: clamp(5px, 0.8vh, 10px) clamp(6px, 1vw, 12px);
+        gap: 4px;
     }
 
-    .candidate-card-name {
-        font-size: clamp(0.7rem, 1.5vw, 1.15rem);
-    }
-
-    .candidate-card-party {
-        font-size: clamp(0.58rem, 1.1vw, 0.85rem);
-        margin-bottom: clamp(4px, 0.8vh, 10px);
-    }
+    .candidate-card-name { font-size: clamp(0.7rem, 1.4vw, 1rem); }
+    .candidate-card-party { font-size: clamp(0.55rem, 1vw, 0.78rem); }
 
     .btn-card-select {
-        padding: clamp(0.3rem, 0.7vh, 0.65rem);
-        font-size: clamp(0.6rem, 1.1vw, 0.88rem);
+        padding: clamp(0.28rem, 0.6vh, 0.55rem);
+        font-size: clamp(0.58rem, 1vw, 0.82rem);
     }
 
     .lcd-bottom-actions {
@@ -1834,54 +1811,20 @@ body {
         height: clamp(135px, 22vw, 240px);
     }
 
-    .field-data-large {
-        font-size: clamp(1.3rem, 3.5vw, 2.6rem);
-    }
+    .field-data-large { font-size: clamp(1.3rem, 3.5vw, 2.6rem); }
+    .field-data-medium { font-size: clamp(0.9rem, 2.2vw, 1.5rem); }
+    .field-title { font-size: clamp(0.62rem, 1.2vw, 0.95rem); }
+    .blank-huge-text { font-size: clamp(2rem, 5vw, 3.8rem); }
+    .blank-sub-info { font-size: clamp(0.8rem, 1.8vw, 1.3rem); }
 
-    .field-data-medium {
-        font-size: clamp(0.9rem, 2.2vw, 1.5rem);
-    }
+    .confirm-footer-bar { padding-top: clamp(5px, 1vh, 16px); flex-shrink: 0; }
 
-    .field-title {
-        font-size: clamp(0.62rem, 1.2vw, 0.95rem);
-    }
-
-    .blank-huge-text {
-        font-size: clamp(2rem, 5vw, 3.8rem);
-    }
-
-    .blank-sub-info {
-        font-size: clamp(0.8rem, 1.8vw, 1.3rem);
-    }
-
-    .confirm-footer-bar {
-        padding-top: clamp(5px, 1vh, 16px);
-        flex-shrink: 0;
-    }
-
-    .key-lcd-corrige {
-        padding: clamp(0.4rem, 0.9vh, 0.9rem) clamp(0.8rem, 1.5vw, 2rem);
-    }
-
-    .key-lcd-confirma {
-        padding: clamp(0.5rem, 1vh, 1rem) clamp(1rem, 2vw, 3rem);
-    }
-
-    .key-main {
-        font-size: clamp(0.8rem, 1.8vw, 1.3rem);
-    }
-
-    .key-sub {
-        font-size: clamp(0.48rem, 0.9vw, 0.65rem);
-    }
-
-    .footer-help-text p {
-        font-size: clamp(0.6rem, 1.2vw, 1rem);
-    }
-
-    .footer-help-text small {
-        font-size: clamp(0.55rem, 1vw, 0.9rem);
-    }
+    .key-lcd-corrige { padding: clamp(0.4rem, 0.9vh, 0.9rem) clamp(0.8rem, 1.5vw, 2rem); }
+    .key-lcd-confirma { padding: clamp(0.5rem, 1vh, 1rem) clamp(1rem, 2vw, 3rem); }
+    .key-main { font-size: clamp(0.8rem, 1.8vw, 1.3rem); }
+    .key-sub { font-size: clamp(0.48rem, 0.9vw, 0.65rem); }
+    .footer-help-text p { font-size: clamp(0.6rem, 1.2vw, 1rem); }
+    .footer-help-text small { font-size: clamp(0.55rem, 1vw, 0.9rem); }
 
     .lock-shield-icon {
         width: clamp(50px, 8vh, 90px);
@@ -1889,46 +1832,16 @@ body {
         margin-bottom: clamp(0.5rem, 1.5vh, 1.5rem);
     }
 
-    .lock-emoji {
-        font-size: clamp(1.5rem, 4vh, 3rem);
-    }
+    .lock-emoji { font-size: clamp(1.5rem, 4vh, 3rem); }
+    .lock-title { font-size: clamp(1.4rem, 4vw, 2.8rem); margin-bottom: clamp(0.3rem, 0.8vh, 0.6rem); }
+    .lock-desc { font-size: clamp(0.8rem, 2vw, 1.35rem); margin-bottom: clamp(1rem, 2.5vh, 2.5rem); }
+    .lock-system-strip { font-size: clamp(0.58rem, 1.1vw, 0.85rem); }
 
-    .lock-title {
-        font-size: clamp(1.4rem, 4vw, 2.8rem);
-        margin-bottom: clamp(0.3rem, 0.8vh, 0.6rem);
-    }
-
-    .lock-desc {
-        font-size: clamp(0.8rem, 2vw, 1.35rem);
-        margin-bottom: clamp(1rem, 2.5vh, 2.5rem);
-    }
-
-    .lock-system-strip {
-        font-size: clamp(0.58rem, 1.1vw, 0.85rem);
-    }
-
-    .gravando-box h2 {
-        font-size: clamp(2rem, 5vw, 3.8rem);
-        margin-bottom: clamp(0.8rem, 2vh, 2rem);
-    }
-
-    .progress-bar-tse {
-        width: clamp(200px, 50vw, 380px);
-        height: clamp(14px, 2.5vh, 26px);
-    }
-
-    .fim-huge-title {
-        font-size: clamp(5rem, 18vw, 10.5rem);
-    }
-
-    .votou-label {
-        font-size: clamp(1.5rem, 4vw, 3.2rem);
-    }
-
-    .tse-seal-bottom {
-        font-size: clamp(0.6rem, 1.2vw, 0.95rem);
-        margin-top: clamp(0.8rem, 2vh, 2.5rem);
-    }
+    .gravando-box h2 { font-size: clamp(2rem, 5vw, 3.8rem); margin-bottom: clamp(0.8rem, 2vh, 2rem); }
+    .progress-bar-tse { width: clamp(200px, 50vw, 380px); height: clamp(14px, 2.5vh, 26px); }
+    .fim-huge-title { font-size: clamp(5rem, 18vw, 10.5rem); }
+    .votou-label { font-size: clamp(1.5rem, 4vw, 3.2rem); }
+    .tse-seal-bottom { font-size: clamp(0.6rem, 1.2vw, 0.95rem); margin-top: clamp(0.8rem, 2vh, 2.5rem); }
 
     .cabinet-bottom-bar {
         font-size: clamp(0.55rem, 1vw, 0.8rem);
@@ -1937,11 +1850,12 @@ body {
     }
 }
 
-/* Celular portrait (largura até 600px) */
+/* ======================================================
+   PORTRAIT — Celular (max-width: 600px)
+   Grid 2 colunas, aspect-ratio 3/4 nas fotos
+   ====================================================== */
 @media (max-width: 600px) and (orientation: portrait) {
-    .urna-stage {
-        padding: 0.25rem 0.3rem;
-    }
+    .urna-stage { padding: 0.25rem 0.3rem; }
 
     .urna-physical-cabinet {
         padding: clamp(5px, 1.2vh, 10px) clamp(6px, 1.5vw, 10px);
@@ -1956,108 +1870,51 @@ body {
         padding: 4px 8px;
     }
 
-    .fort-logo-img {
-        height: clamp(18px, 3vh, 28px);
-    }
+    .fort-logo-img { height: clamp(18px, 3vh, 28px); }
+    .cabinet-title-wrap { margin-left: 8px; }
+    .cabinet-title-wrap h2 { font-size: clamp(0.62rem, 2.5vw, 0.9rem); }
+    .cabinet-title-wrap p, .cabinet-model-tag { display: none; }
 
-    .cabinet-title-wrap {
-        margin-left: 8px;
-    }
-
-    .cabinet-title-wrap h2 {
-        font-size: clamp(0.62rem, 2.5vw, 0.9rem);
-    }
-
-    .cabinet-title-wrap p {
-        display: none;
-    }
-
-    .cabinet-model-tag {
-        display: none;
-    }
-
-    .screen-chassis-bezel {
-        padding: 4px;
-        border-radius: 7px;
-        border-width: 1.5px;
-    }
-
-    .urna-lcd-display {
-        border-width: 2.5px;
-        border-radius: 5px;
-        min-height: 0;
-    }
-
-    .lcd-view {
-        padding: clamp(6px, 1.5vh, 10px) clamp(7px, 2vw, 12px);
-    }
+    .screen-chassis-bezel { padding: 4px; border-radius: 7px; border-width: 1.5px; }
+    .urna-lcd-display { border-width: 2.5px; border-radius: 5px; }
+    .lcd-view { padding: clamp(6px, 1.5vh, 10px) clamp(7px, 2vw, 12px); }
 
     .lcd-header-bar {
         flex-direction: column;
         align-items: flex-start;
         padding-bottom: 4px;
-        margin-bottom: 6px;
+        margin-bottom: 5px;
         gap: 2px;
+        flex-shrink: 0;
     }
 
-    .lcd-small-label {
-        font-size: 0.6rem;
-    }
-
-    .lcd-cargo-title {
-        font-size: clamp(0.78rem, 3.5vw, 1rem);
-    }
+    .lcd-small-label { font-size: 0.6rem; }
+    .lcd-cargo-title { font-size: clamp(0.78rem, 3.5vw, 1rem); }
 
     .lcd-instruction-badge {
-        font-size: 0.6rem;
+        font-size: 0.58rem;
         padding: 2px 5px;
         align-self: flex-start;
     }
 
+    /* 2 colunas + aspect-ratio nas fotos = identificáveis no celular */
     .candidates-visual-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: clamp(5px, 1.5vw, 9px);
     }
 
-    .card-photo-wrapper {
-        height: clamp(80px, 18vh, 130px);
-    }
+    .card-photo-wrapper { border-bottom-width: 2px; }
 
-    .card-info-content {
-        padding: 4px 5px;
-    }
+    .card-info-content { padding: 5px 6px; gap: 3px; }
+    .candidate-card-name { font-size: clamp(0.62rem, 2.5vw, 0.82rem); }
+    .candidate-card-party { font-size: 0.55rem; }
+    .btn-card-select { padding: 0.28rem; font-size: 0.58rem; }
 
-    .candidate-card-name {
-        font-size: clamp(0.62rem, 2.5vw, 0.82rem);
-        margin-bottom: 1px;
-    }
+    .lcd-bottom-actions { padding-top: 5px; flex-shrink: 0; }
 
-    .candidate-card-party {
-        font-size: 0.58rem;
-        margin-bottom: 3px;
-    }
+    .btn-lcd-branco { padding: 0.4rem 0.8rem; font-size: 0.75rem; gap: 6px; }
+    .btn-branco-box { width: 12px; height: 12px; }
 
-    .btn-card-select {
-        padding: 0.28rem;
-        font-size: 0.6rem;
-    }
-
-    .lcd-bottom-actions {
-        padding-top: 5px;
-    }
-
-    .btn-lcd-branco {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.75rem;
-        gap: 6px;
-    }
-
-    .btn-branco-box {
-        width: 12px;
-        height: 12px;
-    }
-
-    /* Confirmação no celular: vertical */
     .confirm-content-grid {
         flex-direction: column-reverse;
         align-items: center;
@@ -2065,36 +1922,18 @@ body {
         padding: 4px 0;
     }
 
-    .confirm-info-col {
-        align-items: center;
-        text-align: center;
-        gap: 0.5rem;
-    }
+    .confirm-info-col { align-items: center; text-align: center; gap: 0.5rem; }
 
     .tse-official-photo-frame {
         width: clamp(80px, 22vw, 120px);
         height: clamp(108px, 30vw, 160px);
     }
 
-    .field-data-large {
-        font-size: clamp(1.1rem, 5vw, 1.6rem);
-    }
-
-    .field-data-medium {
-        font-size: clamp(0.8rem, 3vw, 1rem);
-    }
-
-    .field-title {
-        font-size: 0.6rem;
-    }
-
-    .blank-huge-text {
-        font-size: clamp(1.6rem, 7vw, 2.5rem);
-    }
-
-    .blank-sub-info {
-        font-size: clamp(0.7rem, 2.5vw, 0.95rem);
-    }
+    .field-data-large { font-size: clamp(1.1rem, 5vw, 1.6rem); }
+    .field-data-medium { font-size: clamp(0.8rem, 3vw, 1rem); }
+    .field-title { font-size: 0.6rem; }
+    .blank-huge-text { font-size: clamp(1.6rem, 7vw, 2.5rem); }
+    .blank-sub-info { font-size: clamp(0.7rem, 2.5vw, 0.95rem); }
 
     .confirm-footer-bar {
         flex-direction: column;
@@ -2102,6 +1941,7 @@ body {
         align-items: stretch;
         text-align: center;
         padding-top: 6px;
+        flex-shrink: 0;
     }
 
     .footer-buttons-group {
@@ -2111,23 +1951,10 @@ body {
         width: 100%;
     }
 
-    .key-lcd-corrige,
-    .key-lcd-confirma {
-        padding: 0.5rem 0.3rem;
-        width: 100%;
-    }
-
-    .key-main {
-        font-size: 0.85rem;
-    }
-
-    .key-sub {
-        font-size: 0.48rem;
-    }
-
-    .footer-help-text {
-        display: none;
-    }
+    .key-lcd-corrige, .key-lcd-confirma { padding: 0.5rem 0.3rem; width: 100%; }
+    .key-main { font-size: 0.85rem; }
+    .key-sub { font-size: 0.48rem; }
+    .footer-help-text { display: none; }
 
     .lock-shield-icon {
         width: clamp(40px, 7vh, 60px);
@@ -2135,18 +1962,9 @@ body {
         margin-bottom: 0.5rem;
     }
 
-    .lock-emoji {
-        font-size: clamp(1.2rem, 3.5vh, 2rem);
-    }
-
-    .lock-title {
-        font-size: clamp(1.2rem, 5vw, 1.9rem);
-    }
-
-    .lock-desc {
-        font-size: clamp(0.7rem, 3vw, 1rem);
-        margin-bottom: 1rem;
-    }
+    .lock-emoji { font-size: clamp(1.2rem, 3.5vh, 2rem); }
+    .lock-title { font-size: clamp(1.2rem, 5vw, 1.9rem); }
+    .lock-desc { font-size: clamp(0.7rem, 3vw, 1rem); margin-bottom: 1rem; }
 
     .lock-system-strip {
         font-size: 0.6rem;
@@ -2155,41 +1973,18 @@ body {
         text-align: center;
     }
 
-    .gravando-box h2 {
-        font-size: clamp(1.6rem, 7vw, 2.5rem);
-        margin-bottom: 0.8rem;
-    }
-
-    .progress-bar-tse {
-        width: 80%;
-        height: 16px;
-    }
-
-    .fim-huge-title {
-        font-size: clamp(4rem, 20vw, 7rem);
-    }
-
-    .votou-label {
-        font-size: clamp(1.2rem, 5vw, 2rem);
-    }
-
-    .tse-seal-bottom {
-        font-size: 0.62rem;
-        margin-top: 0.8rem;
-    }
-
-    .cabinet-bottom-bar {
-        font-size: 0.55rem;
-        padding: 3px 5px;
-    }
+    .gravando-box h2 { font-size: clamp(1.6rem, 7vw, 2.5rem); margin-bottom: 0.8rem; }
+    .progress-bar-tse { width: 80%; height: 16px; }
+    .fim-huge-title { font-size: clamp(4rem, 20vw, 7rem); }
+    .votou-label { font-size: clamp(1.2rem, 5vw, 2rem); }
+    .tse-seal-bottom { font-size: 0.62rem; margin-top: 0.8rem; }
+    .cabinet-bottom-bar { font-size: 0.55rem; padding: 3px 5px; flex-shrink: 0; }
 }
 
-/* ============================================================
-   LANDSCAPE — tablet e smartphone (sem scroll, tudo na tela)
-   Garante que nunca afeta desktop: max-width E max-height
-   ============================================================ */
-
-/* Tablet landscape: iPad deitado e similares */
+/* ======================================================
+   LANDSCAPE — Tablet deitado (max-width: 1280px, max-height: 960px)
+   Fotos com height fixo compacto para caber sem scroll
+   ====================================================== */
 @media (orientation: landscape) and (max-width: 1280px) and (max-height: 960px) {
     .urna-stage {
         padding: clamp(4px, 0.6vh, 10px) clamp(8px, 0.8vw, 18px);
@@ -2209,24 +2004,10 @@ body {
         align-items: center;
     }
 
-    .fort-logo-img {
-        height: clamp(18px, 3.5vh, 34px);
-    }
-
-    .cabinet-title-wrap h2 {
-        font-size: clamp(0.65rem, 1.6vh, 1rem);
-        line-height: 1.1;
-    }
-
-    .cabinet-title-wrap p {
-        font-size: clamp(0.52rem, 1.1vh, 0.75rem);
-        line-height: 1.1;
-    }
-
-    .cabinet-model-tag {
-        font-size: clamp(0.52rem, 1vh, 0.72rem);
-        padding: 2px 8px;
-    }
+    .fort-logo-img { height: clamp(18px, 3.5vh, 34px); }
+    .cabinet-title-wrap h2 { font-size: clamp(0.65rem, 1.6vh, 1rem); line-height: 1.1; }
+    .cabinet-title-wrap p { font-size: clamp(0.52rem, 1.1vh, 0.75rem); line-height: 1.1; }
+    .cabinet-model-tag { font-size: clamp(0.52rem, 1vh, 0.72rem); padding: 2px 8px; }
 
     .screen-chassis-bezel {
         padding: clamp(4px, 0.6vh, 8px);
@@ -2237,7 +2018,6 @@ body {
     .urna-lcd-display {
         border-width: 2.5px;
         border-radius: clamp(4px, 0.8vw, 8px);
-        min-height: 0;
     }
 
     .lcd-view {
@@ -2252,57 +2032,33 @@ body {
         flex-shrink: 0;
     }
 
-    .lcd-small-label {
-        font-size: clamp(0.55rem, 1.1vh, 0.85rem);
-    }
-
-    .lcd-cargo-title {
-        font-size: clamp(0.78rem, 1.8vh, 1.2rem);
-        margin-top: 0;
-    }
+    .lcd-small-label { font-size: clamp(0.55rem, 1.1vh, 0.85rem); }
+    .lcd-cargo-title { font-size: clamp(0.78rem, 1.8vh, 1.2rem); margin-top: 0; }
 
     .lcd-instruction-badge {
         font-size: clamp(0.55rem, 1.1vh, 0.82rem);
         padding: 2px 7px;
     }
 
+    /* Landscape: colunas automáticas + height fixo proporcional à altura */
     .candidates-visual-grid {
-        grid-template-columns: repeat(auto-fit, minmax(clamp(110px, 16vw, 180px), 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(clamp(120px, 18vw, 200px), 1fr));
         gap: clamp(6px, 1vw, 14px);
     }
 
+    /* No landscape sobrescreve aspect-ratio com height limitado */
     .card-photo-wrapper {
-        flex: 1;
-        min-height: 55px;
-        max-height: clamp(80px, 14vh, 140px);
-        height: auto;
+        aspect-ratio: unset;
+        height: clamp(80px, 16vh, 150px);
         border-bottom-width: 2px;
     }
 
-    .card-info-content {
-        padding: clamp(3px, 0.5vh, 8px) clamp(5px, 0.6vw, 10px);
-    }
+    .card-info-content { padding: clamp(3px, 0.5vh, 8px) clamp(5px, 0.6vw, 10px); gap: 3px; }
+    .candidate-card-name { font-size: clamp(0.62rem, 1.3vh, 0.9rem); }
+    .candidate-card-party { font-size: clamp(0.52rem, 1vh, 0.72rem); }
+    .btn-card-select { padding: clamp(2px, 0.4vh, 5px) clamp(4px, 0.5vw, 8px); font-size: clamp(0.55rem, 1vh, 0.75rem); }
 
-    .candidate-card-name {
-        font-size: clamp(0.62rem, 1.3vh, 0.9rem);
-        margin-bottom: 1px;
-    }
-
-    .candidate-card-party {
-        font-size: clamp(0.52rem, 1vh, 0.72rem);
-        margin-bottom: clamp(2px, 0.4vh, 6px);
-    }
-
-    .btn-card-select {
-        padding: clamp(2px, 0.4vh, 5px) clamp(4px, 0.5vw, 8px);
-        font-size: clamp(0.55rem, 1vh, 0.75rem);
-    }
-
-    .lcd-bottom-actions {
-        padding-top: clamp(3px, 0.5vh, 8px);
-        border-top-width: 2px;
-        flex-shrink: 0;
-    }
+    .lcd-bottom-actions { padding-top: clamp(3px, 0.5vh, 8px); border-top-width: 2px; flex-shrink: 0; }
 
     .btn-lcd-branco {
         padding: clamp(3px, 0.5vh, 7px) clamp(10px, 1.2vw, 18px);
@@ -2310,12 +2066,8 @@ body {
         border-width: 2px;
     }
 
-    .btn-branco-box {
-        width: 11px;
-        height: 11px;
-    }
+    .btn-branco-box { width: 11px; height: 11px; }
 
-    /* Confirmação horizontal */
     .confirm-content-grid {
         flex-direction: row;
         align-items: center;
@@ -2324,29 +2076,11 @@ body {
         padding: clamp(3px, 0.5vh, 8px) clamp(8px, 1vw, 16px);
     }
 
-    .confirm-info-col {
-        flex: 1;
-        gap: clamp(5px, 0.8vh, 14px);
-        align-items: flex-start;
-        text-align: left;
-    }
-
-    .field-title {
-        font-size: clamp(0.55rem, 1.1vh, 0.82rem);
-    }
-
-    .field-data-large {
-        font-size: clamp(1rem, 2.5vh, 1.9rem);
-        line-height: 1.1;
-    }
-
-    .field-data-medium {
-        font-size: clamp(0.75rem, 1.8vh, 1.2rem);
-    }
-
-    .confirm-photo-col {
-        flex-shrink: 0;
-    }
+    .confirm-info-col { flex: 1; gap: clamp(5px, 0.8vh, 14px); align-items: flex-start; text-align: left; }
+    .field-title { font-size: clamp(0.55rem, 1.1vh, 0.82rem); }
+    .field-data-large { font-size: clamp(1rem, 2.5vh, 1.9rem); line-height: 1.1; }
+    .field-data-medium { font-size: clamp(0.75rem, 1.8vh, 1.2rem); }
+    .confirm-photo-col { flex-shrink: 0; }
 
     .tse-official-photo-frame {
         width: clamp(70px, 10vw, 140px);
@@ -2354,17 +2088,9 @@ body {
         border-width: 2px;
     }
 
-    .photo-caption {
-        font-size: clamp(0.55rem, 1vh, 0.78rem);
-    }
-
-    .confirm-blank-col .blank-huge-text {
-        font-size: clamp(1.6rem, 3.5vh, 2.8rem);
-    }
-
-    .confirm-blank-col .blank-sub-info {
-        font-size: clamp(0.7rem, 1.5vh, 1.1rem);
-    }
+    .photo-caption { font-size: clamp(0.55rem, 1vh, 0.78rem); }
+    .confirm-blank-col .blank-huge-text { font-size: clamp(1.6rem, 3.5vh, 2.8rem); }
+    .confirm-blank-col .blank-sub-info { font-size: clamp(0.7rem, 1.5vh, 1.1rem); }
 
     .confirm-footer-bar {
         border-top-width: 2px;
@@ -2375,41 +2101,15 @@ body {
         align-items: center;
     }
 
-    .footer-help-text p {
-        font-size: clamp(0.58rem, 1.2vh, 0.88rem);
-    }
+    .footer-help-text p { font-size: clamp(0.58rem, 1.2vh, 0.88rem); }
+    .footer-help-text small { font-size: clamp(0.5rem, 1vh, 0.75rem); }
+    .footer-buttons-group { display: flex; gap: clamp(6px, 1vw, 14px); width: auto; }
 
-    .footer-help-text small {
-        font-size: clamp(0.5rem, 1vh, 0.75rem);
-    }
+    .key-lcd-corrige { padding: clamp(4px, 0.7vh, 9px) clamp(12px, 1.5vw, 22px); border-radius: 6px; box-shadow: 0 3px 0 #7a2a00; }
+    .key-lcd-confirma { padding: clamp(5px, 0.8vh, 10px) clamp(18px, 2.2vw, 32px); border-radius: 6px; box-shadow: 0 3px 0 #003a1b; }
+    .key-main { font-size: clamp(0.7rem, 1.5vh, 1.05rem); }
+    .key-sub { font-size: clamp(0.42rem, 0.85vh, 0.62rem); }
 
-    .footer-buttons-group {
-        display: flex;
-        gap: clamp(6px, 1vw, 14px);
-        width: auto;
-    }
-
-    .key-lcd-corrige {
-        padding: clamp(4px, 0.7vh, 9px) clamp(12px, 1.5vw, 22px);
-        border-radius: 6px;
-        box-shadow: 0 3px 0 #7a2a00;
-    }
-
-    .key-lcd-confirma {
-        padding: clamp(5px, 0.8vh, 10px) clamp(18px, 2.2vw, 32px);
-        border-radius: 6px;
-        box-shadow: 0 3px 0 #003a1b;
-    }
-
-    .key-main {
-        font-size: clamp(0.7rem, 1.5vh, 1.05rem);
-    }
-
-    .key-sub {
-        font-size: clamp(0.42rem, 0.85vh, 0.62rem);
-    }
-
-    /* Tela bloqueada */
     .lock-shield-icon {
         width: clamp(36px, 6vh, 64px);
         height: clamp(36px, 6vh, 64px);
@@ -2417,51 +2117,17 @@ body {
         border-width: 2.5px;
     }
 
-    .lock-emoji {
-        font-size: clamp(1.1rem, 3vh, 2.2rem);
-    }
+    .lock-emoji { font-size: clamp(1.1rem, 3vh, 2.2rem); }
+    .lock-title { font-size: clamp(1rem, 2.8vh, 2rem); margin-bottom: 0.2rem; }
+    .lock-desc { font-size: clamp(0.65rem, 1.6vh, 1.1rem); margin-bottom: clamp(0.4rem, 1vh, 1.2rem); }
+    .lock-system-strip { font-size: clamp(0.5rem, 1vh, 0.72rem); flex-direction: row; justify-content: space-around; }
 
-    .lock-title {
-        font-size: clamp(1rem, 2.8vh, 2rem);
-        margin-bottom: 0.2rem;
-    }
+    .gravando-box h2 { font-size: clamp(1.4rem, 3.5vh, 2.8rem); margin-bottom: clamp(0.4rem, 1vh, 1.2rem); }
+    .progress-bar-tse { width: clamp(160px, 40vw, 340px); height: clamp(10px, 2vh, 18px); }
+    .fim-huge-title { font-size: clamp(4rem, 14vh, 9rem); }
+    .votou-label { font-size: clamp(1.2rem, 3vh, 2.5rem); }
+    .tse-seal-bottom { font-size: clamp(0.5rem, 1vh, 0.78rem); margin-top: clamp(0.3rem, 0.8vh, 1.2rem); }
 
-    .lock-desc {
-        font-size: clamp(0.65rem, 1.6vh, 1.1rem);
-        margin-bottom: clamp(0.4rem, 1vh, 1.2rem);
-    }
-
-    .lock-system-strip {
-        font-size: clamp(0.5rem, 1vh, 0.72rem);
-        flex-direction: row;
-        justify-content: space-around;
-    }
-
-    /* Gravando e FIM */
-    .gravando-box h2 {
-        font-size: clamp(1.4rem, 3.5vh, 2.8rem);
-        margin-bottom: clamp(0.4rem, 1vh, 1.2rem);
-    }
-
-    .progress-bar-tse {
-        width: clamp(160px, 40vw, 340px);
-        height: clamp(10px, 2vh, 18px);
-    }
-
-    .fim-huge-title {
-        font-size: clamp(4rem, 14vh, 9rem);
-    }
-
-    .votou-label {
-        font-size: clamp(1.2rem, 3vh, 2.5rem);
-    }
-
-    .tse-seal-bottom {
-        font-size: clamp(0.5rem, 1vh, 0.78rem);
-        margin-top: clamp(0.3rem, 0.8vh, 1.2rem);
-    }
-
-    /* Barra inferior */
     .cabinet-bottom-bar {
         padding: clamp(2px, 0.4vh, 6px) clamp(5px, 0.7vw, 12px);
         flex-shrink: 0;
@@ -2471,11 +2137,11 @@ body {
     }
 }
 
-/* Smartphone landscape: celular deitado (pequeno) */
+/* ======================================================
+   LANDSCAPE — Smartphone deitado (max-height: 500px)
+   ====================================================== */
 @media (orientation: landscape) and (max-height: 500px) {
-    .urna-stage {
-        padding: 3px 6px;
-    }
+    .urna-stage { padding: 3px 6px; }
 
     .urna-physical-cabinet {
         padding: 4px 8px;
@@ -2484,40 +2150,14 @@ body {
         gap: 4px;
     }
 
-    .cabinet-brand-bar {
-        padding: 3px 7px;
-        flex-shrink: 0;
-        gap: 6px;
-    }
+    .cabinet-brand-bar { padding: 3px 7px; flex-shrink: 0; gap: 6px; }
+    .fort-logo-img { height: clamp(15px, 3vh, 22px); }
+    .cabinet-title-wrap h2 { font-size: clamp(0.55rem, 1.8vh, 0.82rem); line-height: 1.1; }
+    .cabinet-title-wrap p, .cabinet-model-tag { display: none; }
 
-    .fort-logo-img {
-        height: clamp(15px, 3vh, 22px);
-    }
-
-    .cabinet-title-wrap h2 {
-        font-size: clamp(0.55rem, 1.8vh, 0.82rem);
-        line-height: 1.1;
-    }
-
-    .cabinet-title-wrap p,
-    .cabinet-model-tag {
-        display: none;
-    }
-
-    .screen-chassis-bezel {
-        padding: 3px;
-        border-radius: 5px;
-        border-width: 1.5px;
-    }
-
-    .urna-lcd-display {
-        border-width: 2px;
-        border-radius: 4px;
-    }
-
-    .lcd-view {
-        padding: 4px 8px;
-    }
+    .screen-chassis-bezel { padding: 3px; border-radius: 5px; border-width: 1.5px; }
+    .urna-lcd-display { border-width: 2px; border-radius: 4px; }
+    .lcd-view { padding: 4px 8px; }
 
     .lcd-header-bar {
         padding-bottom: 2px;
@@ -2527,18 +2167,9 @@ body {
         flex-shrink: 0;
     }
 
-    .lcd-small-label {
-        font-size: 0.55rem;
-    }
-
-    .lcd-cargo-title {
-        font-size: clamp(0.65rem, 1.8vh, 0.9rem);
-    }
-
-    .lcd-instruction-badge {
-        font-size: 0.55rem;
-        padding: 1px 5px;
-    }
+    .lcd-small-label { font-size: 0.55rem; }
+    .lcd-cargo-title { font-size: clamp(0.65rem, 1.8vh, 0.9rem); }
+    .lcd-instruction-badge { font-size: 0.55rem; padding: 1px 5px; }
 
     .candidates-visual-grid {
         grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -2546,61 +2177,30 @@ body {
     }
 
     .card-photo-wrapper {
-        height: clamp(50px, 10vh, 80px);
+        aspect-ratio: unset;
+        height: clamp(50px, 11vh, 85px);
         min-height: 50px;
+        border-bottom-width: 2px;
     }
 
-    .card-info-content {
-        padding: 2px 4px;
-    }
+    .card-info-content { padding: 2px 4px; gap: 2px; }
+    .candidate-card-name { font-size: 0.62rem; }
+    .candidate-card-party { font-size: 0.52rem; }
+    .btn-card-select { padding: 2px 3px; font-size: 0.52rem; }
 
-    .candidate-card-name {
-        font-size: 0.62rem;
-    }
+    .lcd-bottom-actions { padding-top: 3px; flex-shrink: 0; }
+    .btn-lcd-branco { padding: 3px 9px; font-size: 0.65rem; }
 
-    .candidate-card-party {
-        font-size: 0.52rem;
-        margin-bottom: 2px;
-    }
-
-    .btn-card-select {
-        padding: 2px 3px;
-        font-size: 0.52rem;
-    }
-
-    .lcd-bottom-actions {
-        padding-top: 3px;
-        flex-shrink: 0;
-    }
-
-    .btn-lcd-branco {
-        padding: 3px 9px;
-        font-size: 0.65rem;
-    }
-
-    .confirm-content-grid {
-        flex-direction: row;
-        align-items: center;
-        gap: 8px;
-        padding: 2px 6px;
-    }
+    .confirm-content-grid { flex-direction: row; align-items: center; gap: 8px; padding: 2px 6px; }
 
     .tse-official-photo-frame {
         width: clamp(50px, 9vw, 75px);
         height: clamp(68px, 12vw, 100px);
     }
 
-    .field-data-large {
-        font-size: clamp(0.9rem, 2.5vh, 1.3rem);
-    }
-
-    .field-data-medium {
-        font-size: clamp(0.7rem, 1.8vh, 0.95rem);
-    }
-
-    .field-title {
-        font-size: 0.55rem;
-    }
+    .field-data-large { font-size: clamp(0.9rem, 2.5vh, 1.3rem); }
+    .field-data-medium { font-size: clamp(0.7rem, 1.8vh, 0.95rem); }
+    .field-title { font-size: 0.55rem; }
 
     .confirm-footer-bar {
         flex-direction: row;
@@ -2610,86 +2210,24 @@ body {
         flex-shrink: 0;
     }
 
-    .footer-help-text {
-        display: none;
-    }
+    .footer-help-text { display: none; }
+    .footer-buttons-group { display: flex; gap: 5px; width: auto; }
 
-    .footer-buttons-group {
-        display: flex;
-        gap: 5px;
-        width: auto;
-    }
+    .key-lcd-corrige { padding: 4px 9px; }
+    .key-lcd-confirma { padding: 4px 12px; }
+    .key-main { font-size: 0.72rem; }
+    .key-sub { font-size: 0.42rem; }
 
-    .key-lcd-corrige {
-        padding: 4px 9px;
-    }
+    .lock-shield-icon { width: clamp(28px, 5vh, 44px); height: clamp(28px, 5vh, 44px); margin-bottom: 0.3rem; }
+    .lock-emoji { font-size: clamp(0.9rem, 2.5vh, 1.5rem); }
+    .lock-title { font-size: clamp(0.85rem, 2.5vh, 1.3rem); }
+    .lock-desc { font-size: clamp(0.6rem, 1.5vh, 0.85rem); margin-bottom: 0.4rem; }
+    .lock-system-strip { font-size: 0.5rem; padding-top: 0.3rem; flex-direction: row; justify-content: space-around; }
 
-    .key-lcd-confirma {
-        padding: 4px 12px;
-    }
-
-    .key-main {
-        font-size: 0.72rem;
-    }
-
-    .key-sub {
-        font-size: 0.42rem;
-    }
-
-    .lock-shield-icon {
-        width: clamp(28px, 5vh, 44px);
-        height: clamp(28px, 5vh, 44px);
-        margin-bottom: 0.3rem;
-    }
-
-    .lock-emoji {
-        font-size: clamp(0.9rem, 2.5vh, 1.5rem);
-    }
-
-    .lock-title {
-        font-size: clamp(0.85rem, 2.5vh, 1.3rem);
-    }
-
-    .lock-desc {
-        font-size: clamp(0.6rem, 1.5vh, 0.85rem);
-        margin-bottom: 0.4rem;
-    }
-
-    .lock-system-strip {
-        font-size: 0.5rem;
-        padding-top: 0.3rem;
-        flex-direction: row;
-        justify-content: space-around;
-    }
-
-    .gravando-box h2 {
-        font-size: clamp(1.1rem, 3vh, 1.8rem);
-        margin-bottom: 0.4rem;
-    }
-
-    .progress-bar-tse {
-        width: 50vw;
-        height: 10px;
-    }
-
-    .fim-huge-title {
-        font-size: clamp(2.5rem, 10vh, 5rem);
-    }
-
-    .votou-label {
-        font-size: clamp(0.9rem, 2.5vh, 1.5rem);
-        margin-top: 0.3rem;
-    }
-
-    .tse-seal-bottom {
-        font-size: 0.5rem;
-        margin-top: 0.3rem;
-    }
-
-    .cabinet-bottom-bar {
-        padding: 2px 4px;
-        flex-shrink: 0;
-        font-size: 0.5rem;
-        flex-direction: row;
-    }
+    .gravando-box h2 { font-size: clamp(1.1rem, 3vh, 1.8rem); margin-bottom: 0.4rem; }
+    .progress-bar-tse { width: 50vw; height: 10px; }
+    .fim-huge-title { font-size: clamp(2.5rem, 10vh, 5rem); }
+    .votou-label { font-size: clamp(0.9rem, 2.5vh, 1.5rem); margin-top: 0.3rem; }
+    .tse-seal-bottom { font-size: 0.5rem; margin-top: 0.3rem; }
+    .cabinet-bottom-bar { padding: 2px 4px; flex-shrink: 0; font-size: 0.5rem; flex-direction: row; }
 }
