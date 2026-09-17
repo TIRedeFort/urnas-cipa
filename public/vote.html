@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urna Eletrônica - Justiça Eleitoral</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;600;700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body class="urna-body">
+    <!-- Barra superior de navegação / status -->
+    <header class="top-nav">
+        <a href="index.html" class="nav-back">← Início</a>
+        <div class="header-title">
+            <span class="badge-tse">SISTEMA ELEITORAL</span>
+            <span>URNA ELETRÔNICA - MODELO UE2020</span>
+        </div>
+        <a href="admin.html" class="nav-admin">Painel do Administrador</a>
+    </header>
+
+    <main class="urna-wrapper">
+        <!-- 1. TERMINAL DO MESÁRIO (Identificação do Eleitor) -->
+        <section id="mesario-terminal" class="mesario-terminal">
+            <div class="terminal-card">
+                <div class="terminal-header">
+                    <div class="tse-logo-small">
+                        <svg viewBox="0 0 24 24" width="28" height="28" fill="#ffd700">
+                            <path d="M12 2L1 21h22L12 2zm0 3.99L19.53 19H4.47L12 5.99zM11 10h2v4h-2zm0 6h2v2h-2z"/>
+                        </svg>
+                        <div>
+                            <h3>JUSTIÇA ELEITORAL</h3>
+                            <small>TERMINAL DO MESÁRIO</small>
+                        </div>
+                    </div>
+                    <span class="status-indicator online">ONLINE</span>
+                </div>
+
+                <div class="terminal-body">
+                    <p class="instruction">Digite a <strong>Matrícula ou ID do Colaborador</strong> para liberar a urna de votação:</p>
+                    <form id="auth-form" class="auth-form">
+                        <div class="input-group">
+                            <label for="employee-id">IDENTIFICAÇÃO DO ELEITOR:</label>
+                            <input type="text" id="employee-id" placeholder="Ex: 1045 ou RF2026" autofocus required autocomplete="off">
+                        </div>
+                        <button type="submit" class="btn-liberar" id="btn-liberar">
+                            <span>HABILITAR ELEITOR / LIBERAR URNA</span>
+                            <span class="key-hint">[ENTER]</span>
+                        </button>
+                    </form>
+                </div>
+                <div class="terminal-footer">
+                    <span>SEÇÃO: 0105 | ZONA: 001</span>
+                    <span>REDE FORT VOTING SYSTEM</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. GABINETE OFICIAL DA URNA ELETRÔNICA -->
+        <section id="urna-cabinet" class="urna-cabinet hidden">
+            <div class="cabinet-outer">
+                <!-- MÓDULO ESQUERDO: TELA LCD DA URNA -->
+                <div class="screen-module">
+                    <div class="screen-bezel">
+                        <div class="screen-inner" id="screen-display">
+                            
+                            <!-- Tela de Votação Ativa -->
+                            <div id="screen-voting" class="screen-content">
+                                <div class="vote-header">
+                                    <span class="seu-voto">SEU VOTO PARA</span>
+                                    <h2 class="cargo-title" id="cargo-title">REPRESENTANTE</h2>
+                                </div>
+
+                                <div class="vote-body">
+                                    <div class="vote-inputs-info">
+                                        <div class="number-row">
+                                            <span class="label-numero">Número:</span>
+                                            <div class="digit-boxes">
+                                                <div class="digit-box active" id="digit-1"></div>
+                                                <div class="digit-box" id="digit-2"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="candidate-details hidden" id="candidate-details">
+                                            <div class="info-row">
+                                                <span class="info-label">Nome:</span>
+                                                <span class="info-value candidate-name-text" id="disp-candidate-name">CARLOS SILVA</span>
+                                            </div>
+                                            <div class="info-row">
+                                                <span class="info-label">Partido/Setor:</span>
+                                                <span class="info-value candidate-party-text" id="disp-candidate-party">REDE FORT - OPERAÇÕES</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Mensagens de Alerta (Voto Nulo / Em Branco) -->
+                                        <div class="vote-warning hidden" id="vote-warning">
+                                            <div class="warning-title" id="warning-title">NÚMERO ERRADO</div>
+                                            <div class="warning-subtitle" id="warning-subtitle">VOTO NULO</div>
+                                        </div>
+
+                                        <div class="vote-blank-msg hidden" id="vote-blank-msg">
+                                            <span class="blink">VOTO EM BRANCO</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Foto do Candidato -->
+                                    <div class="candidate-photo-wrapper hidden" id="candidate-photo-wrapper">
+                                        <div class="photo-frame">
+                                            <img id="candidate-photo-img" src="" alt="Foto do Candidato">
+                                        </div>
+                                        <span class="photo-label">CANDIDATO</span>
+                                    </div>
+                                </div>
+
+                                <!-- Rodapé de Instruções do TSE -->
+                                <div class="vote-footer" id="vote-footer">
+                                    <div class="footer-divider"></div>
+                                    <p class="footer-hint">Aperte a tecla:</p>
+                                    <div class="footer-keys">
+                                        <p><strong>VERDE</strong> para <strong>CONFIRMAR</strong> este voto</p>
+                                        <p><strong>LARANJA</strong> para <strong>REINICIAR</strong> este voto</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tela de GRAVANDO -->
+                            <div id="screen-gravando" class="screen-state-full hidden">
+                                <div class="gravando-box">
+                                    <h2>GRAVANDO</h2>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill"></div>
+                                    </div>
+                                    <p>AGUARDE...</p>
+                                </div>
+                            </div>
+
+                            <!-- Tela Clássica FIM -->
+                            <div id="screen-fim" class="screen-state-full hidden">
+                                <div class="fim-box">
+                                    <h1 class="fim-text">FIM</h1>
+                                    <p class="votou-text">VOTOU</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MÓDULO DIREITO: TECLADO OFICIAL DA URNA -->
+                <div class="keypad-module">
+                    <!-- Logo / Brasão no Teclado -->
+                    <div class="keypad-header">
+                        <div class="brasao-urna">
+                            <svg viewBox="0 0 100 100" width="40" height="40">
+                                <circle cx="50" cy="50" r="45" fill="none" stroke="#d4af37" stroke-width="3"/>
+                                <polygon points="50,15 61,38 85,38 66,53 73,77 50,62 27,77 34,53 15,38 39,38" fill="#d4af37"/>
+                            </svg>
+                        </div>
+                        <div class="tse-brand-text">
+                            <h3>JUSTIÇA ELEITORAL</h3>
+                            <span>TRIBUNAL SUPERIOR ELEITORAL</span>
+                        </div>
+                    </div>
+
+                    <!-- Teclado Numérico -->
+                    <div class="keys-grid">
+                        <button class="key-num" data-key="1">1</button>
+                        <button class="key-num" data-key="2">2</button>
+                        <button class="key-num" data-key="3">3</button>
+                        <button class="key-num" data-key="4">4</button>
+                        <button class="key-num" data-key="5">
+                            5
+                            <span class="braille-dot" title="Ponto tátil acessibilidade"></span>
+                        </button>
+                        <button class="key-num" data-key="6">6</button>
+                        <button class="key-num" data-key="7">7</button>
+                        <button class="key-num" data-key="8">8</button>
+                        <button class="key-num" data-key="9">9</button>
+                        <div class="key-empty"></div>
+                        <button class="key-num" data-key="0">0</button>
+                        <div class="key-empty"></div>
+                    </div>
+
+                    <!-- Teclas de Ação Oficiais (Branco, Corrige, Confirma) -->
+                    <div class="action-keys-row">
+                        <button class="key-action key-branco" id="btn-branco" title="Atalho: Tecla B ou Espaço">
+                            <span>BRANCO</span>
+                        </button>
+                        <button class="key-action key-corrige" id="btn-corrige" title="Atalho: Tecla Backspace">
+                            <span>CORRIGE</span>
+                        </button>
+                        <button class="key-action key-confirma" id="btn-confirma" title="Atalho: Tecla Enter">
+                            <span>CONFIRMA</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ajuda de Teclado Físico -->
+            <div class="keyboard-hints">
+                <span>💡 <strong>Dica:</strong> Você também pode usar o <strong>teclado físico do seu computador</strong> (Dígitos 0-9, <code>Enter</code> = CONFIRMA, <code>Backspace</code> = CORRIGE, <code>B</code> = BRANCO).</span>
+            </div>
+        </section>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

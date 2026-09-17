@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Mesário & Gestão CIPA - Rede Fort</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;600;700;900&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+
+<body class="admin-body">
+    <header class="admin-top-header">
+        <div class="header-brand-wrap">
+            <img src="logo.png" alt="Logo Rede Fort" class="fort-logo-header">
+            <div>
+                <h1>SEGURANÇA DO TRABALHO &bull; ELEIÇÃO CIPA</h1>
+                <p>PAINEL DO MESÁRIO & CADASTROS &bull; SALVADOR / BAHIA</p>
+            </div>
+        </div>
+        <nav class="top-nav-links">
+            <a href="/urna" class="nav-btn">🗳️ Ir para Urna</a>
+            <a href="/urna-admin" class="nav-btn active">⚙️ Painel do Mesário</a>
+            <a href="/urna-apuracao" class="nav-btn">📊 Apuração ao Vivo</a>
+            <button id="btn-admin-logout" class="nav-btn" onclick="adminLogout()" style="background:#fee2e2; color:#991b1b; border-color:#fca5a5; display:none;">🚪 Sair</button>
+        </nav>
+    </header>
+
+    <div class="admin-container">
+        <!-- 1. LOGIN DE ACESSO DO MESÁRIO -->
+        <section id="admin-login-section" class="card-admin-login">
+            <img src="logo.png" alt="Rede Fort" style="max-height: 50px; margin-bottom: 1rem;">
+            <h2>Acesso ao Painel do Mesário</h2>
+            <p>Insira a senha de acesso para gerenciar a eleição da CIPA.</p>
+            <form id="admin-login-form" onsubmit="window.submitAdminLogin(event); return false;">
+                <div class="form-group">
+                    <label for="admin-password">Senha de Acesso</label>
+                    <input type="password" id="admin-password" placeholder="Digite sua senha" required autofocus autocomplete="current-password">
+                </div>
+                <button type="submit" id="btn-submit-login" class="btn-primary-fort" style="width:100%;" onclick="window.submitAdminLogin(event)">Entrar no Sistema</button>
+            </form>
+        </section>
+
+        <!-- 2. CONTEÚDO PRINCIPAL DO MESÁRIO -->
+        <div id="admin-content" class="hidden">
+
+            <!-- CONTROLE DE LIBERAÇÃO DA URNA PELO MESÁRIO -->
+            <section class="card-mesario-control">
+                <div class="mesario-status-col">
+                    <span class="control-label">STATUS DA URNA DE VOTAÇÃO:</span>
+                    <div id="admin-urna-status-indicator" class="status-box status-locked">
+                        <span class="status-circle"></span>
+                        <span id="admin-status-text">🔴 URNA BLOQUEADA</span>
+                    </div>
+                    <p class="status-hint" id="status-hint">Clique no botão ao lado para liberar a urna para o próximo colaborador votar.</p>
+                </div>
+
+                <div class="mesario-action-col">
+                    <button id="btn-admin-unlock" class="btn-unlock-urna">
+                        <span class="unlock-icon">🟢</span>
+                        <div class="unlock-text-wrap">
+                            <span class="unlock-main-text">LIBERAR URNA PARA 1 VOTO</span>
+                            <small class="unlock-sub-text">Habilita a tela da urna para o próximo colaborador</small>
+                        </div>
+                    </button>
+                    
+                    <button id="btn-admin-lock" class="btn-secondary-lock hidden">
+                        🔒 Bloquear Urna
+                    </button>
+
+                    <button id="btn-admin-count-votes" class="btn-contagem-urna" onclick="iniciarContagemVotos()">
+                        <span class="unlock-icon">🏆</span>
+                        <div class="unlock-text-wrap">
+                            <span class="unlock-main-text">REALIZAR CONTAGEM DOS VOTOS</span>
+                            <small class="unlock-sub-text">Encerrar e apurar o novo Presidente da CIPA</small>
+                        </div>
+                    </button>
+                </div>
+            </section>
+
+            <!-- ABAS DE NAVEGAÇÃO INTERNA -->
+            <div class="admin-tabs-nav">
+                <button class="tab-btn active" data-tab="tab-eleitores">👥 Eleitores Aptos (<span id="count-eleitores">0</span>)</button>
+                <button class="tab-btn" data-tab="tab-candidatos">📋 Candidatos CIPA (<span id="count-candidatos">0</span>)</button>
+            </div>
+
+            <!-- ABA 1: GESTÃO DE ELEITORES -->
+            <section id="tab-eleitores" class="tab-pane active">
+                <div class="admin-split-grid">
+                    <!-- Lista de Eleitores -->
+                    <div class="admin-panel-card">
+                        <div class="card-header-flex">
+                            <h3>Colaboradores Aptos para Votar</h3>
+                            <input type="text" id="filter-voters" placeholder="🔍 Buscar por nome ou setor..." class="input-search">
+                        </div>
+
+                        <div class="table-responsive" style="max-height: 480px; overflow-y: auto;">
+                            <table class="tse-admin-table" id="table-voters">
+                                <thead>
+                                    <tr>
+                                        <th>Nome do Colaborador</th>
+                                        <th>Setor / Departamento</th>
+                                        <th>Status do Voto</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dinâmico via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Formulário de Cadastro de Eleitor -->
+                    <div class="admin-panel-card">
+                        <h3>Cadastrar Novo Eleitor</h3>
+                        <form id="form-add-voter" class="form-standard">
+                            <div class="form-group">
+                                <label for="voter-name">Nome Completo</label>
+                                <input type="text" id="voter-name" placeholder="Ex: MARCOS SANTANA" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="voter-dept">Setor / Departamento</label>
+                                <input type="text" id="voter-dept" placeholder="Ex: LOGÍSTICA / ESTOQUE" required>
+                            </div>
+                            <button type="submit" class="btn-primary-fort">Adicionar Eleitor</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ABA 2: GESTÃO DE CANDIDATOS COM UPLOAD DE FOTO -->
+            <section id="tab-candidatos" class="tab-pane hidden">
+                <div class="admin-split-grid">
+                    <!-- Formulário de Cadastro com Upload -->
+                    <div class="admin-panel-card">
+                        <h3>Cadastrar Candidato CIPA</h3>
+                        <form id="form-add-candidate" class="form-standard">
+                            <div class="form-group">
+                                <label for="cand-name">Nome do Candidato</label>
+                                <input type="text" id="cand-name" placeholder="Ex: RENATA SILVA" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="cand-dept">Setor / Departamento</label>
+                                <input type="text" id="cand-dept" placeholder="Ex: OPERAÇÕES & QUALIDADE" required>
+                            </div>
+                            
+                            <!-- Campo de Upload Real de Foto -->
+                            <div class="form-group">
+                                <label>Foto Oficial do Candidato</label>
+                                <div class="file-upload-box" id="drop-zone-photo" onclick="document.getElementById('cand-photo-file').click()">
+                                    <input type="file" id="cand-photo-file" accept="image/*" style="position:absolute; width:1px; height:1px; opacity:0; overflow:hidden;">
+                                    <div class="file-upload-content">
+                                        <span class="upload-icon" style="font-size: 2.2rem; display: block; margin-bottom: 4px;">📷</span>
+                                        <button type="button" class="btn-select-file" onclick="event.stopPropagation(); document.getElementById('cand-photo-file').click();">📁 Escolher Arquivo do Computador</button>
+                                        <p id="file-chosen-text" style="font-size: 0.8rem; color: #64748b; margin-top: 6px;">Ou arraste e solte uma imagem aqui (JPG, PNG)</p>
+                                    </div>
+                                </div>
+                                <div id="photo-preview-box" class="photo-preview-container hidden" style="margin-top: 12px; text-align: center;">
+                                    <img id="img-preview" src="" alt="Prévia da foto" style="width: 120px; height: 155px; object-fit: cover; border: 3px solid #000; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+                                    <div style="display: flex; gap: 8px; justify-content: center; margin-top: 6px;">
+                                        <span class="preview-tag" style="background:#008844; color:#fff; padding:2px 8px; border-radius:4px; font-size:0.75rem; font-weight:700;">✓ Foto Carregada</span>
+                                        <button type="button" class="btn-delete-item" style="padding: 2px 6px; font-size: 0.75rem;" onclick="removeCandidatePhoto()">Remover</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-primary-fort">Salvar Candidato</button>
+                        </form>
+                    </div>
+
+                    <!-- Lista de Candidatos -->
+                    <div class="admin-panel-card">
+                        <h3>Candidatos Registrados</h3>
+                        <div class="table-responsive">
+                            <table class="tse-admin-table" id="table-candidates">
+                                <thead>
+                                    <tr>
+                                        <th>Foto</th>
+                                        <th>Nome</th>
+                                        <th>Setor</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dinâmico via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

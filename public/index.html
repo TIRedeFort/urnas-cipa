@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urna Eletrônica CIPA - Rede Fort</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;600;700;900&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+
+<body class="urna-body">
+    <div class="urna-stage">
+
+        <!-- GABINETE FÍSICO DA URNA ELETRÔNICA CIPA REDE FORT -->
+        <div class="urna-physical-cabinet">
+            
+            <!-- CABEÇALHO DO GABINETE COM LOGO REDE FORT -->
+            <div class="cabinet-brand-bar">
+                <div class="cabinet-logo-wrapper">
+                    <img src="logo.png" alt="Logo Rede Fort" class="fort-logo-img">
+                </div>
+                <div class="cabinet-title-wrap">
+                    <h2>REDE FORT &bull; SEGURANÇA DO TRABALHO</h2>
+                    <p>ELEIÇÃO CIPA 2026/2027 &bull; SALVADOR / BAHIA</p>
+                </div>
+                <div class="cabinet-model-tag">
+                    <span>URNA DIGITAL &bull; TOUCH</span>
+                </div>
+            </div>
+
+            <!-- MOLDURA EXTERNA DO MONITOR TOUCH -->
+            <div class="screen-chassis-bezel">
+                
+                <!-- VISOR LCD OFICIAL DA URNA -->
+                <div class="urna-lcd-display" id="urna-lcd-display">
+
+                    <!-- 1. ESTADO: URNA BLOQUEADA -->
+                    <div id="view-bloqueada" class="lcd-view view-bloqueada">
+                        <div class="lock-display-box">
+                            <div class="lock-shield-icon">
+                                <span class="lock-emoji">🔒</span>
+                            </div>
+                            <h2 class="lock-title">URNA BLOQUEADA</h2>
+                            <p class="lock-desc">Aguarde a liberação do mesário no terminal para registrar o seu voto na CIPA.</p>
+                            
+                            <div class="lock-system-strip">
+                                <span>UNIDADE: SALVADOR / BA</span>
+                                <span>CIPA REDE FORT</span>
+                                <span>STATUS: AGUARDANDO ELEITOR</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. ESTADO: ESCOLHA DE CANDIDATOS (COM FOTOS E NOMES) -->
+                    <div id="view-votacao" class="lcd-view view-votacao hidden">
+                        <div class="lcd-header-bar">
+                            <div>
+                                <span class="lcd-small-label">SEU VOTO PARA</span>
+                                <h1 class="lcd-cargo-title">REPRESENTANTE DOS EMPREGADOS NA CIPA</h1>
+                            </div>
+                            <span class="lcd-instruction-badge">Toque na foto para escolher:</span>
+                        </div>
+
+                        <!-- Grade de Fotos dos Candidatos -->
+                        <div class="lcd-candidates-scroll-area">
+                            <div class="candidates-visual-grid" id="candidates-grid">
+                                <!-- Preenchido dinamicamente via JS -->
+                            </div>
+                        </div>
+
+                        <!-- Barra Inferior de Ações da Tela de Escolha -->
+                        <div class="lcd-bottom-actions">
+                            <button class="btn-lcd-branco" id="btn-select-blank">
+                                <span class="btn-branco-box"></span>
+                                <span>VOTAR EM BRANCO</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 3. ESTADO: TELA DE CONFIRMAÇÃO OFICIAL DO TSE (DENTRO DA TELA DA URNA) -->
+                    <div id="view-confirmacao" class="lcd-view view-confirmacao hidden">
+                        <div class="lcd-header-bar">
+                            <span class="lcd-small-label">SEU VOTO PARA</span>
+                            <h1 class="lcd-cargo-title">REPRESENTANTE DOS EMPREGADOS NA CIPA</h1>
+                        </div>
+
+                        <div class="confirm-content-grid">
+                            <!-- Detalhes do Candidato -->
+                            <div class="confirm-info-col" id="confirm-candidate-info">
+                                <div class="confirm-field-group">
+                                    <span class="field-title">Nome do Candidato:</span>
+                                    <span class="field-data-large" id="confirm-name">NOME DO CANDIDATO</span>
+                                </div>
+                                <div class="confirm-field-group">
+                                    <span class="field-title">Setor / Departamento:</span>
+                                    <span class="field-data-medium" id="confirm-party">DEPARTAMENTO</span>
+                                </div>
+                            </div>
+
+                            <!-- Caso Voto em Branco -->
+                            <div class="confirm-blank-col hidden" id="confirm-blank-info">
+                                <h2 class="blank-huge-text blink">VOTO EM BRANCO</h2>
+                                <p class="blank-sub-info">Confirme abaixo para registrar seu voto em branco na eleição da CIPA.</p>
+                            </div>
+
+                            <!-- Foto Oficial 3x4 do Candidato -->
+                            <div class="confirm-photo-col" id="confirm-photo-col">
+                                <div class="tse-official-photo-frame">
+                                    <img id="confirm-photo-img" src="" alt="Foto do Candidato">
+                                </div>
+                                <span class="photo-caption">CANDIDATO CIPA</span>
+                            </div>
+                        </div>
+
+                        <!-- Rodapé Oficial com as Teclas CORRIGE e CONFIRMA -->
+                        <div class="confirm-footer-bar">
+                            <div class="footer-help-text">
+                                <p>Aperte a tecla correspondente:</p>
+                                <small><strong>CONFIRMA</strong> para gravar este voto &bull; <strong>CORRIGE</strong> para voltar e escolher outro</small>
+                            </div>
+                            <div class="footer-buttons-group">
+                                <button class="key-lcd-action key-lcd-corrige" id="btn-lcd-corrige">
+                                    <span class="key-sub">LARANJA</span>
+                                    <span class="key-main">CORRIGE</span>
+                                </button>
+                                <button class="key-lcd-action key-lcd-confirma" id="btn-lcd-confirma">
+                                    <span class="key-sub">VERDE</span>
+                                    <span class="key-main">CONFIRMA</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. ESTADO: GRAVANDO -->
+                    <div id="view-gravando" class="lcd-view view-state-full hidden">
+                        <div class="gravando-box">
+                            <h2>GRAVANDO</h2>
+                            <div class="progress-bar-tse">
+                                <div class="progress-bar-fill"></div>
+                            </div>
+                            <p>COMPUTANDO VOTO DA CIPA COM SEGURANÇA...</p>
+                        </div>
+                    </div>
+
+                    <!-- 5. ESTADO: FIM -->
+                    <div id="view-fim" class="lcd-view view-state-full hidden">
+                        <div class="fim-box">
+                            <h1 class="fim-huge-title">FIM</h1>
+                            <p class="votou-label">VOTOU</p>
+                            <div class="tse-seal-bottom">REDE FORT &bull; SEGURANÇA DO TRABALHO &bull; SALVADOR / BA</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- BASE INFERIOR DA CARCAÇA -->
+            <div class="cabinet-bottom-bar">
+                <div class="bottom-seal">
+                    <span>COMISSÃO INTERNA DE PREVENÇÃO DE ACIDENTES &bull; CIPA</span>
+                </div>
+                <div class="bottom-system-id">
+                    <span>SALVADOR - BAHIA</span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

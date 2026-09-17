@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apuração ao Vivo - CIPA Rede Fort</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;600;700;900&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+
+<body class="admin-body">
+    <header class="admin-top-header">
+        <div class="header-brand-wrap">
+            <img src="logo.png" alt="Logo Rede Fort" class="fort-logo-header">
+            <div>
+                <h1>SEGURANÇA DO TRABALHO &bull; ELEIÇÃO CIPA</h1>
+                <p>PAINEL OFICIAL DE APURAÇÃO EM TEMPO REAL &bull; SALVADOR / BAHIA</p>
+            </div>
+        </div>
+        <nav class="top-nav-links">
+            <a href="/urna" class="nav-btn">🗳️ Ir para Urna</a>
+            <a href="/urna-admin" class="nav-btn">⚙️ Painel do Mesário</a>
+            <a href="/urna-apuracao" class="nav-btn active">📊 Apuração ao Vivo</a>
+        </nav>
+    </header>
+
+    <main class="admin-container">
+        
+        <!-- BARRA SUPERIOR DE AÇÕES -->
+        <div class="apuracao-top-bar">
+            <div>
+                <h2 class="section-title">Resultados da Eleição CIPA 2026/2027</h2>
+                <p class="section-subtitle">Unidade: Salvador / Bahia &bull; Apuração automática</p>
+            </div>
+            <div class="apuracao-actions-group">
+                <button class="btn-action-primary" onclick="openBuModal()">
+                    <span>📄 Emitir Boletim de Urna (BU)</span>
+                </button>
+                <button class="btn-action-danger" onclick="resetUrnaModal()">
+                    <span>⚠️ Zerar Eleição / Zerésima</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- CARDS DE ESTATÍSTICAS E QUÓRUM -->
+        <div class="stats-summary-grid">
+            <div class="stat-card">
+                <span class="stat-label">TOTAL DE VOTOS</span>
+                <span class="stat-number" id="stat-total-votes">0</span>
+                <small class="stat-help">Votos computados na urna</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">ELEITORES APTOS</span>
+                <span class="stat-number" id="stat-total-voters">0</span>
+                <small class="stat-help">Colaboradores cadastrados</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">COMPARECIMENTO</span>
+                <span class="stat-number" id="stat-turnout">0%</span>
+                <small class="stat-help" id="stat-turnout-detail">0 de 0 votaram</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">VOTOS EM BRANCO</span>
+                <span class="stat-number" id="stat-blank-votes">0</span>
+                <small class="stat-help" id="stat-blank-pct">0% do total</small>
+            </div>
+        </div>
+
+        <!-- PLACAR DE VOTAÇÃO DOS CANDIDATOS -->
+        <section class="admin-panel-card apuracao-card">
+            <div class="card-header-flex">
+                <h3>Votação por Candidato (Ordem de Apuração)</h3>
+                <span class="live-badge">
+                    <span class="pulse-dot"></span> AO VIVO
+                </span>
+            </div>
+
+            <div id="candidates-results-list" class="candidates-results-container">
+                <!-- Carregado via JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
+
