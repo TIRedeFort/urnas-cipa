@@ -9,7 +9,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "redefort";
 
-// Middlewares
+// Middlewares globais
 app.use(cors());
 app.use(bodyParser.json({ limit: '25mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '25mb' }));
@@ -20,33 +20,36 @@ if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
+// Router principal para unificar rotas sob /urna e na raiz
+const router = express.Router();
+
+// Servir arquivos estáticos (CSS, JS, imagens, áudios, uploads)
+router.use(express.static(path.join(__dirname, 'public'), { index: false }));
+
 // ==========================================================================
 // 1. ROTAS DO FRONTEND
 // ==========================================================================
-// Rota da Urna (Padrão e /urna)
-app.get(['/', '/urna'], (req, res) => {
+// 1.1 Urna de Votação
+router.get(['/', '/urna', '/urna/'], (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Rota do Painel Administrativo / Mesário (/admin e /urna-admin)
-app.get(['/admin', '/urna-admin'], (req, res) => {
+// 1.2 Painel Administrativo / Mesário
+router.get(['/admin', '/urna-admin', '/admin.html'], (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
-// Rota da Apuração em Tempo Real e BU (/apuracao e /urna-apuracao)
-app.get(['/apuracao', '/urna-apuracao'], (req, res) => {
+// 1.3 Painel de Apuração em Tempo Real e Emissão de BU
+router.get(['/apuracao', '/urna-apuracao', '/apuracao.html'], (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'apuracao.html'));
 });
-
-// Arquivos estáticos
-app.use(express.static(path.join(__dirname, 'public'), { index: false }));
 
 
 // ==========================================================================
 // 2. ROTAS DA API - URNA & VOTAÇÃO
 // ==========================================================================
 // Status da Urna para polling
-app.get('/api/urna/status', (req, res) => {
+router.get('/api/urna/status', (req, res) => {
     db.get("SELECT is_unlocked, current_voter_id FROM urna_state WHERE id = 1", [], (err, row) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ 
@@ -57,7 +60,7 @@ app.get('/api/urna/status', (req, res) => {
 });
 
 // Listar candidatos ativos para a urna
-app.get('/api/candidates', (req, res) => {
+router.get('/api/candidates', (req, res) => {
     db.all("SELECT id, name, department, photo_url FROM candidates ORDER BY name ASC", [], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ data: rows });
@@ -65,7 +68,7 @@ app.get('/api/candidates', (req, res) => {
 });
 
 // Computar Voto na Urna e Bloquear Automaticamente
-app.post('/api/urna/vote', (req, res) => {
+router.post('/api/urna/vote', (req, res) => {
     const { candidate_id, is_blank } = req.body;
 
     db.get("SELECT is_unlocked, current_voter_id FROM urna_state WHERE id = 1", [], (err, state) => {
@@ -109,11 +112,10 @@ app.post('/api/urna/vote', (req, res) => {
 // 3. ROTAS DA API - CONTROLE DO MESÁRIO & LIBERAÇÃO
 // ==========================================================================
 // Status da Urna para o Mesário
-app.get('/api/admin/status', (req, res) => {
+router.get('/api/admin/status', (req, res) => {
     db.get("SELECT is_unlocked, current_voter_id, last_unlocked_at FROM urna_state WHERE id = 1", [], (err, row) => {
         if (err) return res.status(500).json({ error: err.message });
         
-        let voterName = null;
         if (row && row.current_voter_id) {
             db.get("SELECT name, department FROM voters WHERE id = ?", [row.current_voter_id], (err, v) => {
                 res.json({ 
@@ -135,7 +137,7 @@ app.get('/api/admin/status', (req, res) => {
 });
 
 // Liberar Urna para 1 Voto (com ou sem eleitor associado)
-app.post('/api/admin/unlock', (req, res) => {
+router.post('/api/admin/unlock', (req, res) => {
     const { voter_id } = req.body;
     const now = new Date().toISOString();
 
@@ -146,7 +148,7 @@ app.post('/api/admin/unlock', (req, res) => {
 });
 
 // Bloquear Urna Manualmente
-app.post('/api/admin/lock', (req, res) => {
+router.post('/api/admin/lock', (req, res) => {
     db.run("UPDATE urna_state SET is_unlocked = 0, current_voter_id = NULL WHERE id = 1", (err) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ success: true, message: "Urna bloqueada pelo mesário." });
@@ -157,8 +159,8 @@ app.post('/api/admin/lock', (req, res) => {
 // ==========================================================================
 // 4. ROTAS DA API - CANDIDATOS COM UPLOAD DE FOTO
 // ==========================================================================
-app.post('/api/candidates', (req, res) => {
-    const { name, department, photo_base64, photo_filename } = req.body;
+router.post('/api/candidates', (req, res) => {
+    const { name, department, photo_base64 } = req.body;
     if (!name) {
         return res.status(400).json({ error: "Nome do candidato é obrigatório." });
     }
@@ -175,7 +177,7 @@ app.post('/api/candidates', (req, res) => {
             const filePath = path.join(uploadsDir, cleanFileName);
 
             fs.writeFileSync(filePath, base64Data, 'base64');
-            photo_url = `/uploads/${cleanFileName}`;
+            photo_url = `uploads/${cleanFileName}`;
         } catch (e) {
             console.error("Erro ao salvar foto enviada:", e);
         }
@@ -193,7 +195,7 @@ app.post('/api/candidates', (req, res) => {
     });
 });
 
-app.delete('/api/candidates/:id', (req, res) => {
+router.delete('/api/candidates/:id', (req, res) => {
     const { id } = req.params;
     db.run("DELETE FROM candidates WHERE id = ?", [id], function (err) {
         if (err) return res.status(500).json({ error: err.message });
@@ -206,7 +208,7 @@ app.delete('/api/candidates/:id', (req, res) => {
 // 5. ROTAS DA API - GESTÃO DE ELEITORES (COLABORADORES APTOS)
 // ==========================================================================
 // Listar Eleitores
-app.get('/api/voters', (req, res) => {
+router.get('/api/voters', (req, res) => {
     db.all("SELECT * FROM voters ORDER BY name ASC", [], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ data: rows });
@@ -214,7 +216,7 @@ app.get('/api/voters', (req, res) => {
 });
 
 // Cadastrar Eleitor (Apenas Nome e Setor)
-app.post('/api/voters', (req, res) => {
+router.post('/api/voters', (req, res) => {
     const { name, department } = req.body;
     if (!name || !name.trim()) {
         return res.status(400).json({ error: "Nome do colaborador é obrigatório." });
@@ -233,7 +235,7 @@ app.post('/api/voters', (req, res) => {
 });
 
 // Alternar status de voto manualmente (Marcar/Desmarcar que votou)
-app.post('/api/voters/:id/toggle-vote', (req, res) => {
+router.post('/api/voters/:id/toggle-vote', (req, res) => {
     const { id } = req.params;
     db.get("SELECT has_voted FROM voters WHERE id = ?", [id], (err, voter) => {
         if (err || !voter) return res.status(404).json({ error: "Eleitor não encontrado." });
@@ -249,7 +251,7 @@ app.post('/api/voters/:id/toggle-vote', (req, res) => {
 });
 
 // Excluir Eleitor
-app.delete('/api/voters/:id', (req, res) => {
+router.delete('/api/voters/:id', (req, res) => {
     const { id } = req.params;
     db.run("DELETE FROM voters WHERE id = ?", [id], function (err) {
         if (err) return res.status(500).json({ error: err.message });
@@ -261,7 +263,7 @@ app.delete('/api/voters/:id', (req, res) => {
 // ==========================================================================
 // 6. ROTAS DA API - GESTÃO DE USUÁRIOS & OPERADORES
 // ==========================================================================
-app.post('/api/admin/login', (req, res) => {
+router.post('/api/admin/login', (req, res) => {
     const { password, username } = req.body;
     const cleanPass = (password || '').trim();
     const cleanUser = (username || '').trim();
@@ -270,8 +272,8 @@ app.post('/api/admin/login', (req, res) => {
         return res.status(400).json({ error: "Por favor, informe a senha de acesso." });
     }
 
-    // Senhas mestras padrão (redefort ou admin)
-    if (cleanPass.toLowerCase() === ADMIN_PASSWORD || cleanPass.toLowerCase() === 'admin' || cleanPass === '123456') {
+    // Senhas mestras padrão (redefort ou admin ou 123456)
+    if (cleanPass.toLowerCase() === ADMIN_PASSWORD.toLowerCase() || cleanPass.toLowerCase() === 'admin' || cleanPass === '123456') {
         return res.json({ 
             success: true, 
             user: { name: 'Administrador CIPA', role: 'ADMIN', username: 'admin' } 
@@ -295,14 +297,14 @@ app.post('/api/admin/login', (req, res) => {
     });
 });
 
-app.get('/api/users', (req, res) => {
+router.get('/api/users', (req, res) => {
     db.all("SELECT id, username, name, role FROM admin_users ORDER BY name ASC", [], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ data: rows });
     });
 });
 
-app.post('/api/users', (req, res) => {
+router.post('/api/users', (req, res) => {
     const { username, password, name, role } = req.body;
     if (!username || !password || !name) {
         return res.status(400).json({ error: "Nome, Usuário e Senha são obrigatórios." });
@@ -315,7 +317,7 @@ app.post('/api/users', (req, res) => {
     });
 });
 
-app.delete('/api/users/:id', (req, res) => {
+router.delete('/api/users/:id', (req, res) => {
     const { id } = req.params;
     if (id == 1) return res.status(400).json({ error: "O administrador principal não pode ser removido." });
     db.run("DELETE FROM admin_users WHERE id = ?", [id], function (err) {
@@ -329,7 +331,7 @@ app.delete('/api/users/:id', (req, res) => {
 // 7. ROTAS DA API - APURAÇÃO, BOLETIM DE URNA (BU) & ZERÉSIMA
 // ==========================================================================
 // Resultados em tempo real e Quórum
-app.get('/api/results', (req, res) => {
+router.get('/api/results', (req, res) => {
     db.all("SELECT * FROM candidates ORDER BY votes_count DESC, name ASC", [], (err, candidates) => {
         if (err) return res.status(500).json({ error: err.message });
 
@@ -359,7 +361,7 @@ app.get('/api/results', (req, res) => {
 });
 
 // Boletim de Urna Oficial da CIPA Rede Fort (Salvador / Bahia)
-app.get('/api/bu', (req, res) => {
+router.get('/api/bu', (req, res) => {
     db.all("SELECT * FROM candidates ORDER BY name ASC", [], (err, candidates) => {
         if (err) return res.status(500).json({ error: err.message });
 
@@ -398,10 +400,10 @@ app.get('/api/bu', (req, res) => {
 });
 
 // Zerésima e Reset Completo da Eleição (com Senha)
-app.post('/api/admin/reset', (req, res) => {
+router.post('/api/admin/reset', (req, res) => {
     const { password } = req.body;
     const cleanPass = (password || '').trim().toLowerCase();
-    if (cleanPass !== ADMIN_PASSWORD && cleanPass !== 'admin' && cleanPass !== '123456') {
+    if (cleanPass !== ADMIN_PASSWORD.toLowerCase() && cleanPass !== 'admin' && cleanPass !== '123456') {
         return res.status(401).json({ error: "Senha mestra incorreta. Senha padrão: 'redefort' ou 'admin'." });
     }
 
@@ -422,15 +424,27 @@ app.post('/api/admin/reset', (req, res) => {
     });
 });
 
+// ==========================================================================
+// 8. REGISTRO GLOBAL DE ROTAS
+// ==========================================================================
+// Montar em /urna (para proxies de subcaminho como app.fortsupermercados.com.br/urna)
+app.use('/urna', router);
+
+// Rotas diretas adicionais caso o proxy faça rewrite ou acesso na raiz
+app.get(['/urna-admin', '/admin'], (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
+app.get(['/urna-apuracao', '/apuracao'], (req, res) => res.sendFile(path.join(__dirname, 'public', 'apuracao.html')));
+
+// Montar também na raiz /
+app.use('/', router);
 
 // Iniciar Servidor Unificado
 app.listen(PORT, () => {
     console.log(`===========================================================`);
-    console.log(`🛡️  REDE FORT - SEGURANÇA DO TRABALHO &bull; ELEIÇÃO CIPA`);
+    console.log(`🛡️  REDE FORT - SEGURANÇA DO TRABALHO • ELEIÇÃO CIPA`);
     console.log(`📍  SALVADOR / BAHIA`);
     console.log(`-----------------------------------------------------------`);
     console.log(`🗳️  URNA DE VOTAÇÃO: http://localhost:${PORT}/urna`);
-    console.log(`⚙️  PAINEL DO ADMIN: http://localhost:${PORT}/admin`);
-    console.log(`📊  APURAÇÃO AO VIVO: http://localhost:${PORT}/apuracao`);
+    console.log(`⚙️  PAINEL DO ADMIN: http://localhost:${PORT}/urna-admin`);
+    console.log(`📊  APURAÇÃO AO VIVO: http://localhost:${PORT}/urna-apuracao`);
     console.log(`===========================================================`);
 });

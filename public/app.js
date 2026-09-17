@@ -1,4 +1,11 @@
-const API_URL = '/api';
+const API_URL = 'api';
+
+function formatPhotoUrl(url) {
+    if (!url) return 'logo.png';
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
+    if (url.startsWith('/')) return url.substring(1);
+    return url;
+}
 
 // ==========================================================================
 // 1. SINTETIZADOR DE ÁUDIO OFICIAL DA URNA ELETRÔNICA (WEB AUDIO API)
@@ -181,7 +188,7 @@ function loadCandidatesForUrna() {
                 card.className = 'candidate-select-card';
                 card.onclick = () => showConfirmationScreen(c);
 
-                const photoUrl = c.photo_url || 'logo.png';
+                const photoUrl = formatPhotoUrl(c.photo_url);
 
                 card.innerHTML = `
                     <div class="card-photo-wrapper">
@@ -212,7 +219,7 @@ function showConfirmationScreen(candidate) {
     if (confirmPhotoCol) confirmPhotoCol.classList.remove('hidden');
     if (confirmBlankInfo) confirmBlankInfo.classList.add('hidden');
 
-    if (confirmPhotoImg) confirmPhotoImg.src = candidate.photo_url || 'logo.png';
+    if (confirmPhotoImg) confirmPhotoImg.src = formatPhotoUrl(candidate.photo_url);
     if (confirmName) confirmName.textContent = candidate.name;
     if (confirmParty) confirmParty.textContent = candidate.department || 'REDE FORT';
 }
@@ -698,7 +705,7 @@ function loadCandidatesAdminTable() {
             list.forEach(c => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><img src="${c.photo_url || 'logo.png'}" style="width:40px; height:50px; object-fit:cover; border-radius:4px; border:1px solid #cbd5e1;"></td>
+                    <td><img src="${formatPhotoUrl(c.photo_url)}" style="width:40px; height:50px; object-fit:cover; border-radius:4px; border:1px solid #cbd5e1;"></td>
                     <td><strong>${c.name}</strong></td>
                     <td>${c.department || '-'}</td>
                     <td>
@@ -1255,7 +1262,7 @@ window.iniciarContagemVotos = function() {
             }
 
             const winPct = totalVotes > 0 ? ((winner.votes_count / totalVotes) * 100).toFixed(1) : '100';
-            const winnerPhoto = winner.photo_url || 'logo.png';
+            const winnerPhoto = formatPhotoUrl(winner.photo_url);
 
             winnerBox.innerHTML = `
                 <div class="winner-official-seal">RESULTADO HOMOLOGADO &bull; CIPA 2026/2027</div>
