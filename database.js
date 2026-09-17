@@ -43,6 +43,8 @@ db.serialize(() => {
             if (!names.includes('party')) {
                 db.run("ALTER TABLE candidates ADD COLUMN party TEXT");
             }
+            // Sanitização de caminhos de imagem para compatibilidade com subpastas/Easypanel
+            db.run("UPDATE candidates SET photo_url = SUBSTR(photo_url, 2) WHERE photo_url LIKE '/%'");
         }
     });
 

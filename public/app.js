@@ -3,8 +3,14 @@ const API_URL = 'api';
 function formatPhotoUrl(url) {
     if (!url) return 'logo.png';
     if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
-    if (url.startsWith('/')) return url.substring(1);
-    return url;
+    let clean = url.trim();
+    while (clean.startsWith('/')) {
+        clean = clean.substring(1);
+    }
+    if (clean.startsWith('urna/')) {
+        clean = clean.substring(5);
+    }
+    return clean;
 }
 
 // ==========================================================================
@@ -775,7 +781,7 @@ function loadLiveApuracao() {
 
                     row.innerHTML = `
                         <div style="font-size: 1.2rem; font-weight: 900; color: #475569; width: 30px;">#${index + 1}</div>
-                        <img src="${c.photo_url || 'logo.png'}" class="result-photo-mini" alt="${c.name}">
+                        <img src="${formatPhotoUrl(c.photo_url)}" class="result-photo-mini" alt="${c.name}">
                         <div class="result-progress-wrap">
                             <div class="result-info-header">
                                 <span>${c.name} <small style="color:#64748b; font-weight:600;">(${c.department})</small></span>
