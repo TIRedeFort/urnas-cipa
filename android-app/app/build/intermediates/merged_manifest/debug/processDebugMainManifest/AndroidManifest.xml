@@ -23,18 +23,21 @@
         android:appComponentFactory="androidx.core.app.CoreComponentFactory"
         android:debuggable="true"
         android:extractNativeLibs="false"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="Urna CIPA"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.UrnaCIPA"
         android:usesCleartextTraffic="true" >
         <activity
             android:name="br.com.fortsupermercados.urna.MainActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden"
             android:exported="true"
             android:screenOrientation="sensorLandscape"
-            android:theme="@style/Theme.UrnaCIPA.Fullscreen" >
+            android:theme="@style/Theme.UrnaCIPA.Fullscreen"
+            android:windowSoftInputMode="adjustResize" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

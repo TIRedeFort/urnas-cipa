@@ -1,9 +1,14 @@
 R_DEF: Internal format may change without notice
 local
+id btnConfigServer
+id btnRetry
+id errorContainer
 id progressBar
+id txtErrorMessage
 id webView
 layout activity_main
 mipmap ic_launcher
 string app_name
 style Theme.UrnaCIPA
 style Theme.UrnaCIPA.Fullscreen
+xml network_security_config
