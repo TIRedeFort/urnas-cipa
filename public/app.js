@@ -480,7 +480,8 @@ function loadAllAdminData() {
 function startAdminPolling() {
     setInterval(() => {
         checkAdminUrnaStatus();
-    }, 800);
+        loadVotersTable();
+    }, 2000);
 }
 
 function checkAdminUrnaStatus() {
@@ -548,7 +549,11 @@ function loadVotersTable() {
         .then(res => res.json())
         .then(res => {
             cachedVoters = res.data || [];
-            renderVoters(cachedVoters);
+            const term = filterVoters ? filterVoters.value.toLowerCase().trim() : '';
+            const visibleVoters = term
+                ? cachedVoters.filter(v => v.name.toLowerCase().includes(term) || (v.department && v.department.toLowerCase().includes(term)))
+                : cachedVoters;
+            renderVoters(visibleVoters);
             const countElem = document.getElementById('count-eleitores');
             if (countElem) countElem.textContent = cachedVoters.length;
         });
