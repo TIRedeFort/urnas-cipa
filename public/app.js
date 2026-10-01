@@ -136,6 +136,21 @@ let selectedCandidateForVote = null;
 let isBlankVote = false;
 let isUrnaCurrentlyUnlocked = false;
 let isVotingInProgress = false;
+const voterAccessToken = new URLSearchParams(window.location.hash.slice(1)).get('token');
+
+if (viewBloqueada && voterAccessToken) {
+    const lockDescription = viewBloqueada.querySelector('.lock-desc');
+    fetch(`${API_URL}/voter-access/${encodeURIComponent(voterAccessToken)}`, { cache: 'no-store' })
+        .then(async response => ({ response, data: await response.json() }))
+        .then(({ response, data }) => {
+            if (!response.ok) throw new Error(data.error || 'QR Code inválido.');
+            isUrnaCurrentlyUnlocked = true;
+            showVotingScreen();
+        })
+        .catch(error => {
+            if (lockDescription) lockDescription.textContent = error.message;
+        });
+}
 
 function startUrnaPolling() {
     if (!viewBloqueada) return;
@@ -289,6 +304,7 @@ if (btnLcdConfirma) {
         const payload = isBlankVote 
             ? { is_blank: true }
             : { candidate_id: selectedCandidateForVote.id };
+        if (voterAccessToken) payload.access_token = voterAccessToken;
 
         fetch(`${API_URL}/urna/vote`, {
             method: 'POST',
@@ -307,11 +323,13 @@ if (btnLcdConfirma) {
                     if (viewFim) viewFim.classList.remove('hidden');
                     urnaAudio.playFimSound();
 
-                    setTimeout(() => {
-                        isVotingInProgress = false;
-                        isUrnaCurrentlyUnlocked = false;
-                        showLockScreen();
-                    }, 3500);
+                    if (!voterAccessToken) {
+                        setTimeout(() => {
+                            isVotingInProgress = false;
+                            isUrnaCurrentlyUnlocked = false;
+                            showLockScreen();
+                        }, 3500);
+                    }
                 }, 1000);
             }
         })
@@ -324,7 +342,7 @@ if (btnLcdConfirma) {
     });
 }
 
-if (viewBloqueada) {
+if (viewBloqueada && !voterAccessToken) {
     startUrnaPolling();
 }
 
@@ -389,8 +407,10 @@ function setAdminLoggedInUI() {
 }
 
 window.adminLogout = function() {
-    sessionStorage.removeItem('cipa_admin_logged');
-    window.location.reload();
+    fetch(`${API_URL}/admin/logout`, { method: 'POST' }).finally(() => {
+        sessionStorage.removeItem('cipa_admin_logged');
+        window.location.reload();
+    });
 };
 
 window.submitAdminLogin = function(e) {
@@ -415,7 +435,7 @@ window.submitAdminLogin = function(e) {
             sessionStorage.setItem('cipa_admin_logged', 'true');
             setAdminLoggedInUI();
         } else {
-            alert(data.error || 'Senha incorreta! Senha padrão: redefort');
+            alert(data.error || 'Senha incorreta.');
             if (passInput) {
                 passInput.value = '';
                 passInput.focus();
@@ -469,6 +489,11 @@ function checkAdminUrnaStatus() {
     fetch(`${API_URL}/admin/status`)
         .then(res => res.json())
         .then(status => {
+            if (status.error) {
+                sessionStorage.removeItem('cipa_admin_logged');
+                window.location.reload();
+                return;
+            }
             if (status.is_unlocked) {
                 adminStatusIndicator.className = 'status-box status-unlocked';
                 adminStatusText.textContent = '🟢 URNA LIBERADA PARA 1 VOTO';
@@ -553,7 +578,8 @@ function renderVoters(voters) {
             <td>${v.department || '-'}</td>
             <td>${statusBadge}</td>
             <td>
-                <div style="display:flex; gap:6px;">
+                <div class="voter-actions">
+                    ${v.has_voted === 1 ? '' : `<button class="btn-voter-qr" onclick="generateVoterQr(${v.id})">▦ Gerar QR</button>`}
                     <button class="btn-toggle-vote" onclick="toggleVoterStatus(${v.id})">${toggleBtnText}</button>
                     <button class="btn-delete-item" onclick="deleteVoter(${v.id})">Excluir</button>
                 </div>
@@ -562,6 +588,53 @@ function renderVoters(voters) {
         tbody.appendChild(tr);
     });
 }
+
+window.generateVoterQr = async function(id) {
+    try {
+        const response = await fetch(`${API_URL}/voters/${id}/qr`, { method: 'POST' });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Não foi possível gerar o QR Code.');
+
+        document.getElementById('voter-qr-modal')?.remove();
+        const modal = document.createElement('div');
+        modal.className = 'voter-qr-backdrop';
+        modal.id = 'voter-qr-modal';
+        modal.innerHTML = `
+            <section class="voter-qr-card" role="dialog" aria-modal="true" aria-labelledby="voter-qr-title">
+                <button class="voter-qr-close" type="button" aria-label="Fechar">×</button>
+                <p class="voter-qr-eyebrow">ACESSO INDIVIDUAL À VOTAÇÃO</p>
+                <h2 id="voter-qr-title"></h2>
+                <p>Escaneie para abrir a urna liberada neste celular.</p>
+                <img class="voter-qr-image" alt="QR Code de acesso à votação">
+                <div class="voter-qr-actions">
+                    <button class="btn-primary-fort" type="button" data-action="share">Compartilhar</button>
+                    <button class="btn-secondary-lock" type="button" data-action="copy">Copiar link</button>
+                    <button class="btn-secondary-lock" type="button" data-action="close">Fechar</button>
+                </div>
+                <small>QR válido para 1 voto. Gerar outro invalida este acesso.</small>
+            </section>`;
+        modal.querySelector('h2').textContent = data.voter;
+        modal.querySelector('img').src = data.qr;
+        const close = () => modal.remove();
+        modal.querySelector('.voter-qr-close').onclick = close;
+        modal.querySelector('[data-action="close"]').onclick = close;
+        modal.querySelector('[data-action="copy"]').onclick = async () => {
+            await navigator.clipboard.writeText(data.url);
+            alert('Link copiado.');
+        };
+        modal.querySelector('[data-action="share"]').onclick = async () => {
+            if (navigator.share) await navigator.share({ title: 'Acesso à votação CIPA', text: `QR de votação para ${data.voter}`, url: data.url });
+            else {
+                await navigator.clipboard.writeText(data.url);
+                alert('Compartilhamento indisponível. Link copiado.');
+            }
+        };
+        modal.addEventListener('click', event => { if (event.target === modal) close(); });
+        document.body.appendChild(modal);
+    } catch (error) {
+        alert(error.message || 'Erro ao gerar QR Code.');
+    }
+};
 
 if (filterVoters) {
     filterVoters.addEventListener('input', (e) => {
@@ -1171,7 +1244,7 @@ window.resetUrnaModal = function() {
             if (typeof loadLiveApuracao === 'function') loadLiveApuracao();
             if (typeof loadAllAdminData === 'function') loadAllAdminData();
         } else {
-            alert(data.error || "Erro ao zerar eleição. Senha padrão: redefort");
+            alert(data.error || 'Erro ao zerar eleição.');
         }
     });
 };
@@ -1181,7 +1254,7 @@ window.iniciarContagemVotos = function() {
     Promise.all([
         fetch(`${API_URL}/voters`).then(r => r.json()),
         fetch(`${API_URL}/results`).then(r => r.json())
-    ]).then(([votersRes, resultsRes]) => {
+    ]).then(async ([votersRes, resultsRes]) => {
         const voters = votersRes.data || [];
         const results = resultsRes.data || { candidates: [], totalVotes: 0, blanks: 0 };
 
@@ -1194,13 +1267,13 @@ window.iniciarContagemVotos = function() {
             if (!prosseguir) return;
 
             const senha = prompt(`🔐 Digite a senha mestra para autorizar a apuração final:`);
-            if (!senha || (senha.trim().toLowerCase() !== 'redefort' && senha.trim().toLowerCase() !== 'admin' && senha.trim() !== '123456')) {
+            if (!senha || !(await verifyMesarioPassword(senha))) {
                 alert('Senha incorreta! Apuração cancelada.');
                 return;
             }
         } else {
             const senha = prompt(`🔐 Todos os colaboradores já votaram!\n\nDigite a senha mestra para iniciar a apuração dos votos:`);
-            if (!senha || (senha.trim().toLowerCase() !== 'redefort' && senha.trim().toLowerCase() !== 'admin' && senha.trim() !== '123456')) {
+            if (!senha || !(await verifyMesarioPassword(senha))) {
                 alert('Senha incorreta! Apuração cancelada.');
                 return;
             }
@@ -1330,3 +1403,12 @@ window.iniciarContagemVotos = function() {
         alert("Erro ao consultar dados da apuração.");
     });
 };
+
+async function verifyMesarioPassword(password) {
+    const response = await fetch(`${API_URL}/admin/verify-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+    });
+    return response.ok;
+}

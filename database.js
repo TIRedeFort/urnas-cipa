@@ -58,6 +58,12 @@ db.serialize(() => {
         voted_at DATETIME
     )`);
 
+    db.all("PRAGMA table_info(voters)", [], (err, cols) => {
+        if (!err && cols && !cols.some(col => col.name === 'qr_token_hash')) {
+            db.run("ALTER TABLE voters ADD COLUMN qr_token_hash TEXT");
+        }
+    });
+
     // 3. Tabela de Usuários / Operadores do Sistema
     db.run(`CREATE TABLE IF NOT EXISTS admin_users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -66,7 +72,10 @@ db.serialize(() => {
         name TEXT NOT NULL,
         role TEXT DEFAULT 'MESÁRIO'
     )`, () => {
-        db.run(`INSERT OR IGNORE INTO admin_users (id, username, password, name, role) VALUES (1, 'admin', 'redefort', 'Administrador CIPA', 'ADMIN')`);
+        db.run(`INSERT OR IGNORE INTO admin_users (id, username, password, name, role) VALUES (1, 'admin', ?, 'Administrador CIPA', 'ADMIN')`, [process.env.ADMIN_PASSWORD || 'redefort']);
+        if (process.env.ADMIN_PASSWORD) {
+            db.run("UPDATE admin_users SET password = ? WHERE id = 1", [process.env.ADMIN_PASSWORD]);
+        }
     });
 
     // 4. Tabela de Estado da Urna

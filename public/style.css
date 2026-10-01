@@ -1018,6 +1018,108 @@ body {
     background: #e2e8f0;
 }
 
+.voter-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.btn-voter-qr {
+    background: #e8f5ee;
+    border: 1px solid #86c9a2;
+    color: #116334;
+    padding: 0.35rem 0.6rem;
+    border-radius: 5px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.voter-qr-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 12000;
+    display: grid;
+    place-items: center;
+    overflow-y: auto;
+    padding: 16px;
+    background: rgba(15, 23, 42, 0.76);
+}
+
+.voter-qr-card {
+    position: relative;
+    width: min(100%, 430px);
+    padding: 28px 22px 22px;
+    border-radius: 18px;
+    background: #fff;
+    text-align: center;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+}
+
+.voter-qr-card h2 { margin: 4px 0 8px; color: #172554; font-size: 1.35rem; }
+.voter-qr-card p { margin: 0 0 12px; color: #64748b; }
+.voter-qr-eyebrow { color: #15803d !important; font-size: 0.72rem; font-weight: 900; letter-spacing: 0.08em; }
+.voter-qr-card small { display: block; margin-top: 14px; color: #64748b; line-height: 1.45; }
+
+.voter-qr-image {
+    display: block;
+    width: min(76vw, 300px);
+    height: auto;
+    margin: 8px auto 16px;
+    image-rendering: pixelated;
+}
+
+.voter-qr-close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    border: 0;
+    background: none;
+    color: #64748b;
+    font-size: 1.8rem;
+    cursor: pointer;
+}
+
+.voter-qr-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.voter-qr-actions button { min-height: 44px; }
+.voter-qr-actions button:first-child { grid-column: 1 / -1; }
+
+@media (max-width: 700px) {
+    .admin-body { min-height: 100dvh; height: auto; overflow-x: hidden; }
+    .admin-top-header { position: static; padding: 12px 14px; flex-direction: column; align-items: stretch; gap: 12px; }
+    .header-brand-wrap { gap: 10px; }
+    .fort-logo-header { max-width: 46px; }
+    .header-brand-wrap h1 { font-size: 0.78rem; line-height: 1.3; }
+    .header-brand-wrap p { font-size: 0.62rem; line-height: 1.4; }
+    .top-nav-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+    .top-nav-links .nav-btn { min-width: 0; padding: 8px 6px; text-align: center; font-size: 0.72rem; }
+    .admin-container { margin: 14px auto; padding: 0 10px; }
+    .card-admin-login { margin: 18px auto; padding: 22px 16px; }
+    .card-mesario-control { padding: 14px; flex-direction: column; align-items: stretch; gap: 12px; }
+    .mesario-action-col { min-width: 0; width: 100%; }
+    .btn-unlock-urna, .btn-contagem-urna { padding: 12px; gap: 10px; }
+    .unlock-main-text { font-size: 0.9rem; }
+    .unlock-sub-text { font-size: 0.68rem; }
+    .admin-tabs-nav { overflow-x: auto; }
+    .tab-btn { flex: 0 0 auto; padding: 10px 12px; font-size: 0.78rem; }
+    .admin-split-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+    .admin-panel-card { min-width: 0; padding: 14px 12px; }
+    .card-header-flex { align-items: stretch; flex-direction: column; gap: 8px; }
+    .input-search { width: 100%; min-height: 42px; }
+    .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .tse-admin-table { min-width: 660px; }
+    .tse-admin-table th, .tse-admin-table td { padding: 9px 7px; font-size: 0.76rem; }
+    .voter-actions { gap: 5px; }
+    .voter-actions button { min-height: 38px; }
+}
+
+@media (max-width: 380px) {
+    .top-nav-links { grid-template-columns: 1fr; }
+    .voter-qr-card { padding: 25px 15px 18px; }
+    .voter-qr-actions { grid-template-columns: 1fr; }
+    .voter-qr-actions button:first-child { grid-column: auto; }
+}
+
 .btn-delete-item {
     background: #fee2e2;
     color: #b91c1c;

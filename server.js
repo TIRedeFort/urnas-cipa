@@ -1,13 +1,18 @@
+require('dotenv').config();
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
+const QRCode = require('qrcode');
 const db = require('./database');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "redefort";
+const adminSessions = new Map();
 
 // Middlewares globais
 app.use(cors());
@@ -22,6 +27,45 @@ if (!fs.existsSync(uploadsDir)) {
 
 // Router principal para unificar rotas sob /urna e na raiz
 const router = express.Router();
+let mutationQueue = Promise.resolve();
+router.use('/api', (req, res, next) => {
+    if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) return next();
+    const runMutation = () => new Promise((resolve) => {
+        const release = () => resolve();
+        res.once('finish', release);
+        res.once('close', release);
+        next();
+    });
+    mutationQueue = mutationQueue.then(runMutation, runMutation);
+});
+
+function readAdminSession(req) {
+    const cookieHeader = req.headers.cookie || '';
+    const match = cookieHeader.match(/(?:^|;\s*)cipa_admin_session=([^;]+)/);
+    const sessionId = match ? decodeURIComponent(match[1]) : '';
+    const expiresAt = adminSessions.get(sessionId);
+    if (!expiresAt || expiresAt <= Date.now()) {
+        adminSessions.delete(sessionId);
+        return null;
+    }
+    return sessionId;
+}
+
+function requireAdmin(req, res, next) {
+    if (!readAdminSession(req)) return res.status(401).json({ error: 'Sessão expirada. Entre novamente no painel.' });
+    next();
+}
+
+function setAdminSessionCookie(req, res, sessionId, maxAge = 28800) {
+    const secure = process.env.PUBLIC_URL?.startsWith('https://') || req.secure;
+    res.append('Set-Cookie', `cipa_admin_session=${encodeURIComponent(sessionId)}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${maxAge}${secure ? '; Secure' : ''}`);
+}
+
+function verifyAdminPassword(password, callback) {
+    const cleanPassword = String(password || '').trim();
+    if (cleanPassword.toLowerCase() === ADMIN_PASSWORD.toLowerCase()) return callback(true);
+    db.get('SELECT id FROM admin_users WHERE password = ?', [cleanPassword], (err, user) => callback(!err && Boolean(user)));
+}
 
 // Servir arquivos estáticos (CSS, JS, imagens, áudios, uploads)
 router.use(express.static(path.join(__dirname, 'public'), { index: false }));
@@ -69,6 +113,17 @@ router.get('/api/urna/status', (req, res) => {
     });
 });
 
+router.get('/api/voter-access/:token', (req, res) => {
+    const tokenHash = crypto.createHash('sha256').update(req.params.token).digest('hex');
+    db.get("SELECT id, name, department, has_voted FROM voters WHERE qr_token_hash = ?", [tokenHash], (err, voter) => {
+        if (err) return res.status(500).json({ error: 'Não foi possível validar o QR Code.' });
+        if (!voter) return res.status(404).json({ error: 'QR Code inválido ou revogado.' });
+        if (voter.has_voted === 1) return res.status(409).json({ error: 'Este eleitor já votou.' });
+        res.set('Cache-Control', 'no-store');
+        res.json({ valid: true, voter: { name: voter.name, department: voter.department } });
+    });
+});
+
 // Listar candidatos ativos para a urna
 router.get('/api/candidates', (req, res) => {
     db.all("SELECT id, name, department, photo_url FROM candidates ORDER BY name ASC", [], (err, rows) => {
@@ -79,7 +134,54 @@ router.get('/api/candidates', (req, res) => {
 
 // Computar Voto na Urna e Bloquear Automaticamente
 router.post('/api/urna/vote', (req, res) => {
-    const { candidate_id, is_blank } = req.body;
+    const { candidate_id, is_blank, access_token } = req.body;
+
+    if (access_token) {
+        const tokenHash = crypto.createHash('sha256').update(String(access_token)).digest('hex');
+        const hasValidChoice = is_blank === true || (Number.isInteger(Number(candidate_id)) && Number(candidate_id) > 0);
+        if (!hasValidChoice) return res.status(400).json({ error: 'Seleção de voto inválida.' });
+
+        const processQrVote = () => new Promise((resolve) => {
+            const respond = (status, body) => {
+                if (!res.headersSent) res.status(status).json(body);
+                resolve();
+            };
+            db.serialize(() => {
+                db.run('BEGIN IMMEDIATE', (beginErr) => {
+                    if (beginErr) return respond(500, { error: 'Não foi possível iniciar o registro do voto.' });
+                    db.get("SELECT id, has_voted FROM voters WHERE qr_token_hash = ?", [tokenHash], (lookupErr, voter) => {
+                        if (lookupErr || !voter) return db.run('ROLLBACK', () => respond(404, { error: 'QR Code inválido ou revogado.' }));
+                        if (voter.has_voted === 1) return db.run('ROLLBACK', () => respond(409, { error: 'Este QR Code já foi usado para votar.' }));
+
+                        const finish = (voteErr) => {
+                            if (voteErr) return db.run('ROLLBACK', () => respond(400, { error: 'Candidato inválido ou voto indisponível.' }));
+                            db.run('UPDATE voters SET has_voted = 1, voted_at = ? WHERE id = ? AND has_voted = 0', [new Date().toISOString(), voter.id], function (markErr) {
+                                if (markErr || this.changes !== 1) return db.run('ROLLBACK', () => respond(409, { error: 'Este eleitor já votou.' }));
+                                db.run('COMMIT', (commitErr) => {
+                                    if (commitErr) return db.run('ROLLBACK', () => respond(500, { error: 'Não foi possível concluir o registro do voto.' }));
+                                    respond(200, { success: true, message: 'Voto registrado com sucesso!' });
+                                });
+                            });
+                        };
+
+                        if (is_blank === true) {
+                            db.run("UPDATE special_votes SET votes_count = votes_count + 1 WHERE type = 'blank'", function (err) {
+                                finish(err || this.changes !== 1 ? new Error('Voto em branco indisponível') : null);
+                            });
+                        } else {
+                            db.run('UPDATE candidates SET votes_count = votes_count + 1 WHERE id = ?', [Number(candidate_id)], function (err) {
+                                finish(err || this.changes !== 1 ? new Error('Candidato inválido') : null);
+                            });
+                        }
+                    });
+                });
+            });
+        });
+        processQrVote().catch(() => {
+            if (!res.headersSent) res.status(500).json({ error: 'Erro inesperado ao registrar voto.' });
+        });
+        return;
+    }
 
     db.get("SELECT is_unlocked, current_voter_id FROM urna_state WHERE id = 1", [], (err, state) => {
         if (err) return res.status(500).json({ error: err.message });
@@ -122,7 +224,7 @@ router.post('/api/urna/vote', (req, res) => {
 // 3. ROTAS DA API - CONTROLE DO MESÁRIO & LIBERAÇÃO
 // ==========================================================================
 // Status da Urna para o Mesário
-router.get('/api/admin/status', (req, res) => {
+router.get('/api/admin/status', requireAdmin, (req, res) => {
     db.get("SELECT is_unlocked, current_voter_id, last_unlocked_at FROM urna_state WHERE id = 1", [], (err, row) => {
         if (err) return res.status(500).json({ error: err.message });
         
@@ -147,7 +249,7 @@ router.get('/api/admin/status', (req, res) => {
 });
 
 // Liberar Urna para 1 Voto (com ou sem eleitor associado)
-router.post('/api/admin/unlock', (req, res) => {
+router.post('/api/admin/unlock', requireAdmin, (req, res) => {
     const { voter_id } = req.body;
     const now = new Date().toISOString();
 
@@ -158,7 +260,7 @@ router.post('/api/admin/unlock', (req, res) => {
 });
 
 // Bloquear Urna Manualmente
-router.post('/api/admin/lock', (req, res) => {
+router.post('/api/admin/lock', requireAdmin, (req, res) => {
     db.run("UPDATE urna_state SET is_unlocked = 0, current_voter_id = NULL WHERE id = 1", (err) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ success: true, message: "Urna bloqueada pelo mesário." });
@@ -169,7 +271,7 @@ router.post('/api/admin/lock', (req, res) => {
 // ==========================================================================
 // 4. ROTAS DA API - CANDIDATOS COM UPLOAD DE FOTO
 // ==========================================================================
-router.post('/api/candidates', (req, res) => {
+router.post('/api/candidates', requireAdmin, (req, res) => {
     const { name, department, photo_base64 } = req.body;
     if (!name) {
         return res.status(400).json({ error: "Nome do candidato é obrigatório." });
@@ -205,7 +307,7 @@ router.post('/api/candidates', (req, res) => {
     });
 });
 
-router.delete('/api/candidates/:id', (req, res) => {
+router.delete('/api/candidates/:id', requireAdmin, (req, res) => {
     const { id } = req.params;
     db.run("DELETE FROM candidates WHERE id = ?", [id], function (err) {
         if (err) return res.status(500).json({ error: err.message });
@@ -218,15 +320,40 @@ router.delete('/api/candidates/:id', (req, res) => {
 // 5. ROTAS DA API - GESTÃO DE ELEITORES (COLABORADORES APTOS)
 // ==========================================================================
 // Listar Eleitores
-router.get('/api/voters', (req, res) => {
-    db.all("SELECT * FROM voters ORDER BY name ASC", [], (err, rows) => {
+router.get('/api/voters', requireAdmin, (req, res) => {
+    db.all("SELECT id, name, registration, department, has_voted, voted_at FROM voters ORDER BY name ASC", [], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ data: rows });
     });
 });
 
+router.post('/api/voters/:id/qr', requireAdmin, async (req, res) => {
+    const { id } = req.params;
+    db.get('SELECT id, name, has_voted FROM voters WHERE id = ?', [id], async (err, voter) => {
+        if (err) return res.status(500).json({ error: 'Erro ao consultar eleitor.' });
+        if (!voter) return res.status(404).json({ error: 'Eleitor não encontrado.' });
+        if (voter.has_voted === 1) return res.status(409).json({ error: 'Eleitor já votou. Zere a eleição antes de gerar novo acesso.' });
+
+        const token = crypto.randomBytes(32).toString('base64url');
+        const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+        const publicBase = (process.env.PUBLIC_URL || `${req.protocol}://${req.get('host')}${req.baseUrl || ''}`).replace(/\/+$/, '');
+        const voteUrl = `${publicBase}/#token=${token}`;
+        try {
+            const qrDataUrl = await QRCode.toDataURL(voteUrl, { errorCorrectionLevel: 'H', margin: 2, width: 420 });
+            db.run('UPDATE voters SET qr_token_hash = ? WHERE id = ? AND has_voted = 0', [tokenHash, id], function (updateErr) {
+                if (updateErr) return res.status(500).json({ error: 'Não foi possível salvar o acesso.' });
+                if (this.changes !== 1) return res.status(409).json({ error: 'Eleitor já votou.' });
+                res.set('Cache-Control', 'no-store');
+                res.json({ success: true, voter: voter.name, url: voteUrl, qr: qrDataUrl });
+            });
+        } catch (qrErr) {
+            res.status(500).json({ error: 'Não foi possível gerar o QR Code.' });
+        }
+    });
+});
+
 // Cadastrar Eleitor (Apenas Nome e Setor)
-router.post('/api/voters', (req, res) => {
+router.post('/api/voters', requireAdmin, (req, res) => {
     const { name, department } = req.body;
     if (!name || !name.trim()) {
         return res.status(400).json({ error: "Nome do colaborador é obrigatório." });
@@ -245,7 +372,7 @@ router.post('/api/voters', (req, res) => {
 });
 
 // Alternar status de voto manualmente (Marcar/Desmarcar que votou)
-router.post('/api/voters/:id/toggle-vote', (req, res) => {
+router.post('/api/voters/:id/toggle-vote', requireAdmin, (req, res) => {
     const { id } = req.params;
     db.get("SELECT has_voted FROM voters WHERE id = ?", [id], (err, voter) => {
         if (err || !voter) return res.status(404).json({ error: "Eleitor não encontrado." });
@@ -261,7 +388,7 @@ router.post('/api/voters/:id/toggle-vote', (req, res) => {
 });
 
 // Excluir Eleitor
-router.delete('/api/voters/:id', (req, res) => {
+router.delete('/api/voters/:id', requireAdmin, (req, res) => {
     const { id } = req.params;
     db.run("DELETE FROM voters WHERE id = ?", [id], function (err) {
         if (err) return res.status(500).json({ error: err.message });
@@ -282,12 +409,18 @@ router.post('/api/admin/login', (req, res) => {
         return res.status(400).json({ error: "Por favor, informe a senha de acesso." });
     }
 
-    // Senhas mestras padrão (redefort ou admin ou 123456)
-    if (cleanPass.toLowerCase() === ADMIN_PASSWORD.toLowerCase() || cleanPass.toLowerCase() === 'admin' || cleanPass === '123456') {
-        return res.json({ 
-            success: true, 
-            user: { name: 'Administrador CIPA', role: 'ADMIN', username: 'admin' } 
-        });
+    const loginSuccess = (user) => {
+        for (const [id, expiresAt] of adminSessions) {
+            if (expiresAt <= Date.now()) adminSessions.delete(id);
+        }
+        const sessionId = crypto.randomBytes(32).toString('hex');
+        adminSessions.set(sessionId, Date.now() + 8 * 60 * 60 * 1000);
+        setAdminSessionCookie(req, res, sessionId);
+        res.json({ success: true, user });
+    };
+
+    if (cleanPass.toLowerCase() === ADMIN_PASSWORD.toLowerCase()) {
+        return loginSuccess({ name: 'Administrador CIPA', role: 'ADMIN', username: 'admin' });
     }
 
     // Busca no banco por usuário específico ou por qualquer operador com essa senha
@@ -301,20 +434,34 @@ router.post('/api/admin/login', (req, res) => {
 
     db.get(query, params, (err, user) => {
         if (err || !user) {
-            return res.status(401).json({ error: "Usuário ou senha incorretos. A senha padrão é 'redefort' ou 'admin'." });
+            return res.status(401).json({ error: 'Usuário ou senha incorretos.' });
         }
-        res.json({ success: true, user: { id: user.id, name: user.name, role: user.role, username: user.username } });
+        loginSuccess({ id: user.id, name: user.name, role: user.role, username: user.username });
     });
 });
 
-router.get('/api/users', (req, res) => {
+router.post('/api/admin/logout', (req, res) => {
+    const sessionId = readAdminSession(req);
+    if (sessionId) adminSessions.delete(sessionId);
+    setAdminSessionCookie(req, res, '', 0);
+    res.json({ success: true });
+});
+
+router.post('/api/admin/verify-password', requireAdmin, (req, res) => {
+    verifyAdminPassword(req.body.password, (valid) => {
+        if (!valid) return res.status(401).json({ error: 'Senha mestra incorreta.' });
+        res.json({ valid: true });
+    });
+});
+
+router.get('/api/users', requireAdmin, (req, res) => {
     db.all("SELECT id, username, name, role FROM admin_users ORDER BY name ASC", [], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ data: rows });
     });
 });
 
-router.post('/api/users', (req, res) => {
+router.post('/api/users', requireAdmin, (req, res) => {
     const { username, password, name, role } = req.body;
     if (!username || !password || !name) {
         return res.status(400).json({ error: "Nome, Usuário e Senha são obrigatórios." });
@@ -327,7 +474,7 @@ router.post('/api/users', (req, res) => {
     });
 });
 
-router.delete('/api/users/:id', (req, res) => {
+router.delete('/api/users/:id', requireAdmin, (req, res) => {
     const { id } = req.params;
     if (id == 1) return res.status(400).json({ error: "O administrador principal não pode ser removido." });
     db.run("DELETE FROM admin_users WHERE id = ?", [id], function (err) {
@@ -411,25 +558,15 @@ router.get('/api/bu', (req, res) => {
 
 // Zerésima e Reset Completo da Eleição (com Senha)
 router.post('/api/admin/reset', (req, res) => {
-    const { password } = req.body;
-    const cleanPass = (password || '').trim().toLowerCase();
-    if (cleanPass !== ADMIN_PASSWORD.toLowerCase() && cleanPass !== 'admin' && cleanPass !== '123456') {
-        return res.status(401).json({ error: "Senha mestra incorreta. Senha padrão: 'redefort' ou 'admin'." });
-    }
-
-    db.serialize(() => {
-        // Zera votos de todos os candidatos
-        db.run("UPDATE candidates SET votes_count = 0");
-        // Zera votos em branco
-        db.run("UPDATE special_votes SET votes_count = 0");
-        // Desmarca que os eleitores votaram
-        db.run("UPDATE voters SET has_voted = 0, voted_at = NULL");
-        // Bloqueia a urna
-        db.run("UPDATE urna_state SET is_unlocked = 0, current_voter_id = NULL WHERE id = 1");
-
-        res.json({
-            success: true,
-            message: "Eleição ZERADA com sucesso! A Zerésima foi aplicada e todos os votos estão zerados."
+    if (!readAdminSession(req)) return res.status(401).json({ error: 'Sessão expirada. Entre novamente no painel.' });
+    verifyAdminPassword(req.body.password, (valid) => {
+        if (!valid) return res.status(401).json({ error: 'Senha mestra incorreta.' });
+        db.serialize(() => {
+            db.run("UPDATE candidates SET votes_count = 0");
+            db.run("UPDATE special_votes SET votes_count = 0");
+            db.run("UPDATE voters SET has_voted = 0, voted_at = NULL");
+            db.run("UPDATE urna_state SET is_unlocked = 0, current_voter_id = NULL WHERE id = 1");
+            res.json({ success: true, message: 'Eleição zerada com sucesso.' });
         });
     });
 });
